@@ -19,9 +19,9 @@
         }
     ],
     "require": {
-        "undefinedoffset/sortablegridfield": "^0.6.0",
-        "silverstripe/fulltextsearch": "^2.1.0",
-        "silverstripe/taxonomy": "^1.0"
+        "undefinedoffset/sortablegridfield": "^2",
+        "silverstripe/fulltextsearch": "^3",
+        "silverstripe/taxonomy": "^2.0"
     },
     "require-dev": {
         "phpunit/phpunit": "3.7.*@stable",
