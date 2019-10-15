@@ -1,13 +1,15 @@
 <?php
-/**
- *
- */
+
 class FAQPage_Controller extends Page_Controller
 {
-    private static $allowed_actions = array('view');
+    private static $allowed_actions = array(
+        'view',
+        'RatingForm'
+    );
 
     /**
      * How many search results should be shown per-page?
+     * @config
      * @var int
      */
     public static $results_per_page = 10;
@@ -19,14 +21,16 @@ class FAQPage_Controller extends Page_Controller
      */
     public static $search_term_key = 'q';
     public static $search_category_key = 'c';
-    // We replace these keys with real data in the SearchResultsSummary before adding to the template.
+
+    /**
+     * We replace these keys with real data in the SearchResultsSummary before adding to the template.
+     */
     public static $search_results_summary_current_page_key = '%CurrentPage%';
     public static $search_results_summary_total_pages_key = '%TotalPages%';
     public static $search_results_summary_query_key = '%Query%';
 
     /**
-     * SOLR configuration
-     * @var string
+     * Solr configuration
      */
     public static $search_index_class = 'FAQSearchIndex';
     public static $classes_to_search = array(
@@ -36,13 +40,32 @@ class FAQPage_Controller extends Page_Controller
         )
     );
 
-    /*
+    public function init()
+    {
+        parent::init();
+        Requirements::javascript(FAQ_DIR .'/javascript/faq.js');
+    }
+
+    /**
+     * Start a session by setting a dummy property. Sessions are essential for linking behaviour to a user.
+     */
+    public function startSession()
+    {
+        if (!Session::get('FAQPage')) {
+            // Ensure that session is started for tracking behaviour, essential for linking behaviour to a user
+            Session::set('FAQPage', true);
+            Session::save();
+        }
+    }
+
+    /**
      * Renders the base search page if no search term is present.
      * Otherwise runs a search and renders the search results page.
      * Search action taken from FAQPage.php and modified.
      */
     public function index()
     {
+        $this->startSession();
         if ($this->request->getVar(self::$search_term_key) || $this->request->getVar(self::$search_category_key)) {
             return $this->renderSearch($this->search());
         }
@@ -51,24 +74,78 @@ class FAQPage_Controller extends Page_Controller
     }
 
     /**
-     * Render individual view for FAQ
-     * @return array|SS_HTTPResponse 404 error if faq not found
+     * Render individual view for FAQ, record the view if tracking ID is passed
+     * from a search result set for example.
+     *
+     * @return array|SS_HTTPResponse FAQ content or 404 error if FAQ not found
      */
-    public function view()
+    public function view(SS_HTTPRequest $request)
     {
-        $faq = FAQ::get()->filter('ID', $this->request->param('ID'))->first();
+        $this->startSession();
+        $faq = FAQ::get()->filter('ID', $request->param('ID'))->first();
 
         if ($faq === null) {
             $this->httpError(404);
         }
 
-        return array('FAQ' => $faq);
+        // Record the view of an article, linked to search query and results
+        $sessID = session_id();
+        $ratingForm = null;
+        $query = null;
+
+        if ($sessID && $request->getVar('t') && Permission::check('FAQ_IGNORE_SEARCH_LOGS') == false) {
+            $trackingIDs = $this->getTrackingIDs($request->getVar('t'));
+
+            // If there is an article log for the same article attached to the search and results set logs, reuse it
+            $articleLog = FAQResults_Article::get()->filter(array(
+                'SearchID' => $trackingIDs['trackingSearchID'],
+                'ResultSetID' => $trackingIDs['trackingResultsID'],
+                'SessionID' => $sessID,
+                'FAQID' => $faq->ID
+            ))->first();
+
+            if (!$articleLog || !$articleLog->exists()) {
+                // Check that the session matches before writing a new log for an article view
+                $searchLog = FAQSearch::get()->filter(array(
+                    'ID' => $trackingIDs['trackingSearchID'],
+                    'SessionID' => $sessID
+                ))->first();
+
+                if ($searchLog && $searchLog->exists()) {
+                    $articleLog = FAQResults_Article::create(array(
+                        'SearchID' => $trackingIDs['trackingSearchID'],
+                        'ResultSetID' => $trackingIDs['trackingResultsID'],
+                        'FAQID' => $faq->ID,
+                        'SessionID' => $sessID,
+                    ));
+                    $articleLog->write();
+                }
+            } else {
+                $searchLog = $articleLog->Search();
+            }
+
+            // Only generate the rating form if article log exists
+            if ($articleLog && $articleLog->exists()) {
+                $ratingForm = $this->RatingForm();
+                $ratingForm->loadDataFrom($articleLog);
+            }
+            if ($searchLog && $searchLog->exists()) {
+                $query = $searchLog->Term;
+            }
+        }
+
+        return array(
+            'FAQ' => $faq,
+            'FAQRatingForm' => $ratingForm,
+            'Query' => $query
+        );
     }
 
-
     /**
-     * Search function. Called from index() if we have a search term.
-     * @return HTMLText search results template.
+     * Search function. Called from index() if we have a search term. Record the
+     * search if session exists.
+     *
+     * @return array Including search results as a PaginatedList.
      */
     public function search()
     {
@@ -89,10 +166,68 @@ class FAQPage_Controller extends Page_Controller
 
         // get search query
         $query = $this->getSearchQuery($keywords);
+
         try {
             $searchResult = $this->doSearch($query, $start, $limit);
-
             $results = $searchResult->Matches;
+
+            // Log the search query and result set for the query, link them to a session (ensure session is started)
+            $sessID = session_id();
+            if ($sessID && Permission::check('FAQ_IGNORE_SEARCH_LOGS') == false) {
+
+                $trackingSearchID = $this->findTrackingID($this->request);
+
+                // If the tracking ID is set then use existing search log if the log is for the same session
+                if ($trackingSearchID) {
+                    $searchLog = FAQSearch::get()->filter(array(
+                        'ID' => $trackingSearchID,
+                        'SessionID' => $sessID
+                    ))->first();
+                    $searchLogID = ($searchLog && $searchLog->exists()) ? $searchLog->ID : null;
+                } else {
+
+                    $searchLog = FAQSearch::create(array(
+                        'SessionID' => $sessID,
+                        'Term' => $keywords,
+                        'TotalResults' => $results->getTotalItems()
+                    ));
+
+                    // Optionally save some referrer data
+                    $controller = Controller::curr();
+                    if ($controller instanceof ContentController) {
+                        $referrer = Controller::curr()->data();
+                        if ($referrer) {
+                            $searchLog->update(array(
+                                'ReferrerID' => $referrer->ID,
+                                'ReferrerType' => $referrer->ClassName,
+                                'ReferrerURL' => $referrer->Link()
+                            ));
+                        }
+                    }
+                    $searchLogID = $searchLog->write();
+                }
+
+                // A valid search log ID exists for this session, a new results set log
+                // is created, results logs are not re-used, each page of results viewed is a new log entry
+                if ($searchLogID) {
+                    $resultsLogID = FAQResults::create(array(
+                        'SearchID' => $searchLogID,
+                        'ArticleSet' => json_encode(array_keys($results->map())),
+                        'SetSize' => count($results->map()),
+                        'SessionID' => $sessID,
+                    ))->write();
+                }
+
+                // Loop through page of results and append the full tracking code to each article link
+                if ($searchLogID && $resultsLogID) {
+                    foreach ($results as $result) {
+                        $result->trackingID = $searchLogID . '_' . $resultsLogID;
+                    }
+                }
+
+                // Append partial tracking code to each pagination link
+                $results->setTrackingURL($this->request, $searchLogID . '_');
+            }
 
             // if the suggested query has a trailing '?' then hide the hardcoded one from 'Did you mean <Suggestion>?'
             $showTrailingQuestionmark = !preg_match('/\?$/', $searchResult->Suggestion);
@@ -103,7 +238,12 @@ class FAQPage_Controller extends Page_Controller
                 'SuggestionNice' => $searchResult->SuggestionNice,
                 'SuggestionQueryString' => $this->makeQueryLink($searchResult->SuggestionQueryString)
             );
-            $renderData = $this->parseSearchResults($results, $suggestionData, $keywords);
+            $renderData = $this->parseSearchResults(
+                $results,
+                $suggestionData,
+                $keywords
+            );
+
         } catch (Exception $e) {
             $renderData = array('SearchError' => true);
             SS_Log::log($e, SS_Log::WARN);
@@ -113,7 +253,49 @@ class FAQPage_Controller extends Page_Controller
     }
 
     /**
+     * Helper to extract tracking IDs from a get param in the format id_id.
+     *
+     * @param  string $id ID from GET param in format id_id.
+     * @return array      Array with the IDs extracted
+     */
+    public function getTrackingIDs($id)
+    {
+        $ids = array();
+        $parts = explode('_', $id);
+        $ids['trackingSearchID'] = (isset($parts[0])) ? $parts[0] : null;
+        $ids['trackingResultsID'] = (isset($parts[1])) ? $parts[1] : null;
+        return $ids;
+    }
+
+    /**
+     * Find the tracking ID to use when updating the search log.
+     *
+     * @param  SS_HTTPRequest $request Current request
+     * @return int                     The search log ID for the current search
+     */
+    public function findTrackingID(SS_HTTPRequest $request) {
+
+        // Use the GET param first
+        $trackingIDs = $this->getTrackingIDs($request->getVar('t'));
+        if ($trackingIDs['trackingSearchID'] != null) {
+            return $trackingIDs['trackingSearchID'];
+        }
+
+        // Check if a search within this session exists for the same query and use that tracking ID
+        // to prevent multiple search logs when back button used
+        $log = FAQSearch::get()->filter(array(
+            'SessionID' => session_id(),
+            'Term' => $request->getVar(self::$search_term_key)
+        ))->first();
+
+        if ($log && $log->exists()) {
+            return $log->ID;
+        }
+    }
+
+    /**
      * Builds a search query from a give search term.
+     *
      * @return SearchQuery
      */
     protected function getSearchQuery($keywords)
@@ -157,16 +339,24 @@ class FAQPage_Controller extends Page_Controller
      */
     public function doSearch($query, $start, $limit)
     {
+        $params = array(
+            'defType' => 'edismax',
+            'hl' => 'true',
+            'spellcheck' => 'true',
+            'spellcheck.collate' => 'true'
+        );
+
+        // add optional dictionary
+        if($searchParams = Config::inst()->get('FAQSearchIndex', 'search_params')) {
+            $params = array_merge($params, $searchParams);
+            //$params["spellcheck.dictionary"] = $dictionary;
+        }
+
         $result = singleton(self::$search_index_class)->search(
             $query,
             $start,
             $limit,
-            array(
-                'defType' => 'edismax',
-                'hl' => 'true',
-                'spellcheck' => 'true',
-                'spellcheck.collate' => 'true'
-            )
+            $params
         );
 
         return $result;
@@ -174,7 +364,8 @@ class FAQPage_Controller extends Page_Controller
 
     /**
      * Renders the search template from a given Solr search result, suggestion and search term.
-     * @return HTMLText search results template.
+     *
+     * @return array Including search results as a PaginatedList.
      */
     protected function parseSearchResults($results, $suggestion, $keywords)
     {
@@ -245,11 +436,11 @@ class FAQPage_Controller extends Page_Controller
         return $this->customise($renderData)->renderWith($templates);
     }
 
-
     /**
      * Makes a query link for the current page from a search term
      * Returns a URL with an empty search term if no query is passed
-     * @return string  The URL for this search query
+     *
+     * @return String  The URL for this search query
      */
     protected function makeQueryLink($query = null)
     {
@@ -370,24 +561,104 @@ class FAQPage_Controller extends Page_Controller
     {
         return _t('FAQPage.CategoriesSelectAllText', $this->CategoriesSelectAllText);
     }
+
     public function SearchFieldPlaceholder()
     {
         return _t('FAQPage.SearchFieldPlaceholder', $this->SearchFieldPlaceholder);
     }
+
     public function SearchButtonText()
     {
         return _t('FAQPage.SearchButtonText', $this->SearchButtonText);
     }
+
     public function NoResultsMessage()
     {
         return _t('FAQPage.NoResultsMessage', $this->NoResultsMessage);
     }
+
     public function SearchResultsTitle()
     {
         return _t('FAQPage.SearchResultsTitle', $this->SearchResultsTitle);
     }
+
     public function SearchResultMoreLink()
     {
         return _t('FAQPage.SearchResultMoreLink', $this->MoreLinkText);
+    }
+
+    /**
+     * Rating form, best to only display this form if a tracking ID can be set e.g: avoid using $RatingForm directly in
+     * the template @see view() above for example usage.
+     *
+     * @return Form The rating form
+     */
+    public function RatingForm() {
+
+        // Only show the rating form for users whose tracking ID matches session
+        $fields = FieldList::create(
+            OptionsetField::create('Useful', 'Rating', array(
+                'Y' => 'Helpful',
+                'N' => 'Unhelpful'
+            )),
+            TextareaField::create('Comment'),
+            LiteralField::create('CharCounter', '<div class="faq__char-counter pull-right"></div>'),
+            HiddenField::create('ID', '')
+        );
+        $actions = FieldList::create(
+            FormAction::create('rate', 'Submit')
+        );
+        $form = Form::create(
+            $this,
+            'RatingForm',
+            $fields,
+            $actions
+        )->addExtraClass('faq__rating');
+
+        $this->extend('updateRatingForm', $form);
+
+        return $form;
+    }
+
+    /**
+     * Rate an article, this will find the article log to update and write to it.
+     *
+     * @param  Array          $data    Submitted form data
+     * @param  Form           $form    Submitted form object
+     * @param  SS_HTTPRequest $request Request
+     * @return HTTPResponse            Redirects back
+     */
+    public function rate(Array $data, Form $form, SS_HTTPRequest $request) {
+
+        // If the session and matches for the article log, then add rating/comment
+        $updated = false;
+        $articleLogID = (int) $data['ID'];
+        $sessID = session_id();
+        if ($sessID && $articleLogID) {
+            $articleLog = FAQResults_Article::get()->filter(array(
+                'ID' => $articleLogID,
+                'SessionID' => $sessID
+            ))->first();
+
+            if ($articleLog && $articleLog->exists()) {
+                $updated = $articleLog->update(array(
+                    'Comment' => $data['Comment'],
+                    'Useful' => $data['Useful']
+                ))->write();
+
+                if ($updated) {
+                    $form->sessionMessage('Thank you for your feedback.', 'good');
+                }
+            }
+        }
+        if (!$updated) {
+            $form->sessionMessage('Sorry, your feedback could not be submitted.', 'bad');
+        }
+
+        if (!Director::is_ajax()) {
+            $this->redirectBack();
+        } else {
+            //TODO: AJAX response here
+        }
     }
 }

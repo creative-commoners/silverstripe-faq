@@ -55,8 +55,10 @@ class FAQPage extends Page
             'Categories to show and search for',
             'TaxonomyTerm'
         );
-        $treedropdown->setDescription('Displays FAQs with selected categories filtered. '.
-                                      'Don\'t select any if you want to show all FAQs regardless of categories');
+        $treedropdown->setDescription(
+            'Displays FAQs with selected categories filtered. '
+            . 'Don\'t select any if you want to show all FAQs regardless of categories'
+        );
         $treedropdown->setTreeBaseID(FAQ::getRootCategory()->ID);
         $fields->addFieldToTab(
             'Root.Main',

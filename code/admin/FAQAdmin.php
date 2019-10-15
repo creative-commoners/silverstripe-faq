@@ -3,6 +3,7 @@
 /**
  * Model Admin for FAQs search module.
  * Allows a content author to publish and edit questions and answers.
+ *
  * @see FAQ for FAQ DataObject.
  */
 class FAQAdmin extends ModelAdmin
@@ -27,11 +28,15 @@ class FAQAdmin extends ModelAdmin
      */
     public function getExportFields()
     {
-        return array(
+        $fields = array(
             'Question' => 'Question',
             'Answer' => 'Answer',
             'Keywords' => 'Keywords',
             'Category.Name' => 'Category'
         );
+
+        $this->extend('updateFAQExportFields', $fields);
+
+        return $fields;
     }
 }
