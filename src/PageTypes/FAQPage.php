@@ -1,4 +1,35 @@
 <?php
+
+namespace Silverstripe\FAQ\PageTypes;
+
+use Page;
+
+
+
+
+
+
+use GridFieldSortableRows;
+
+
+
+use Silverstripe\FAQ\Model\FAQ;
+use SilverStripe\Taxonomy\TaxonomyTerm;
+use SilverStripe\Forms\TreeMultiselectField;
+use SilverStripe\Forms\Tab;
+use SilverStripe\Forms\TextField;
+use SilverStripe\Forms\TextareaField;
+use SilverStripe\Forms\GridField\GridFieldConfig_RelationEditor;
+use SilverStripe\Forms\GridField\GridFieldAddNewButton;
+use SilverStripe\Forms\GridField\GridFieldEditButton;
+use SilverStripe\Forms\GridField\GridFieldFilterHeader;
+use SilverStripe\Forms\GridField\GridFieldDataColumns;
+use SilverStripe\Forms\GridField\GridFieldAddExistingAutocompleter;
+use SilverStripe\Forms\LiteralField;
+use SilverStripe\Forms\GridField\GridField;
+use SilverStripe\ORM\ArrayList;
+
+
 /**
  * FAQ pagetype, displays Q & A related to the page.
  * Has a custom search index to add search capabilities to the page.
@@ -31,8 +62,8 @@ class FAQPage extends Page
     );
 
     private static $many_many = array(
-        'FeaturedFAQs' => 'FAQ',
-        'Categories' => 'TaxonomyTerm'
+        'FeaturedFAQs' => FAQ::class,
+        'Categories' => TaxonomyTerm::class
     );
 
     private static $many_many_extraFields = array(
@@ -53,7 +84,7 @@ class FAQPage extends Page
         $treedropdown = new TreeMultiselectField(
             'Categories',
             'Categories to show and search for',
-            'TaxonomyTerm'
+            TaxonomyTerm::class
         );
         $treedropdown->setDescription(
             'Displays FAQs with selected categories filtered. '
@@ -111,12 +142,12 @@ class FAQPage extends Page
         $fields->insertBefore($FeaturedFAQsTab, 'PublishingSchedule');
 
         $components = GridFieldConfig_RelationEditor::create();
-        $components->removeComponentsByType('GridFieldAddNewButton');
-        $components->removeComponentsByType('GridFieldEditButton');
-        $components->removeComponentsByType('GridFieldFilterHeader');
+        $components->removeComponentsByType(GridFieldAddNewButton::class);
+        $components->removeComponentsByType(GridFieldEditButton::class);
+        $components->removeComponentsByType(GridFieldFilterHeader::class);
         $components->addComponent(new GridFieldSortableRows('SortOrder'));
 
-        $dataColumns = $components->getComponentByType('GridFieldDataColumns');
+        $dataColumns = $components->getComponentByType(GridFieldDataColumns::class);
         $dataColumns->setDisplayFields(array(
             'Title' => _t('FAQPage.ColumnQuestion', 'Ref.'),
             'Question' => _t('FAQPage.ColumnQuestion', 'Question'),
@@ -124,7 +155,7 @@ class FAQPage extends Page
             'Category.Name' => _t('FAQPage.ColumnPageType', 'Category'),
         ));
 
-        $components->getComponentByType('GridFieldAddExistingAutocompleter')
+        $components->getComponentByType(GridFieldAddExistingAutocompleter::class)
                    ->setResultsFormat('$Question');
 
         // warning for categories filtering on featured FAQs

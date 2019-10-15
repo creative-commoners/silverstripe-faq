@@ -1,5 +1,15 @@
 <?php
 
+namespace Silverstripe\FAQ\Extensions;
+
+
+
+use Silverstripe\FAQ\Model\FAQSearch;
+use Colymba\BulkManager\BulkManager;
+use SilverStripe\ORM\DataExtension;
+
+
+
 /**
  * Adds Archiving and Deleting for bulk actions, makes it much easier to archive or delete a long list of FAQ Search
  * results.
@@ -8,10 +18,10 @@ class FAQSearchBulkEditExtension extends DataExtension
 {
     public function updateEditForm(&$form) {
         $fields = $form->Fields();
-        $table = $fields->dataFieldByName('FAQSearch');
+        $table = $fields->dataFieldByName(FAQSearch::class);
 
         // create the bulk manager container
-        $bulk = new GridFieldBulkManager(null, false);
+        $bulk = new BulkManager(null, false);
 
         // add Bulk Archive and Bulk Delete buttons
         $bulk

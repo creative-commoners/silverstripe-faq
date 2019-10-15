@@ -1,4 +1,39 @@
 <?php
+
+namespace Silverstripe\FAQ\Tests;
+
+
+
+
+
+use Phockito;
+
+
+
+
+
+
+
+
+use SilverStripe\Security\Member;
+use Silverstripe\FAQ\PageTypes\FAQPage;
+use SilverStripe\Control\Session;
+use SilverStripe\Control\Director;
+use Silverstripe\FAQ\PageTypes\FAQPageController;
+use Silverstripe\FAQ\Model\FAQ;
+use SilverStripe\ORM\ArrayList;
+use Silverstripe\FAQ\Search\FAQSearchIndexPaginatedList;
+use SilverStripe\FullTextSearch\Search\Queries\SearchQuery;
+use SilverStripe\View\ArrayData;
+use Silverstripe\FAQ\Model\FAQSearch;
+use Silverstripe\FAQ\Model\FAQResults;
+use SilverStripe\Control\HTTPRequest;
+use Silverstripe\FAQ\Model\FAQResultsArticle;
+use SilverStripe\Forms\Form;
+use SilverStripe\Comments\Model\Comment;
+use SilverStripe\Dev\FunctionalTest;
+
+
 /**
  * Tests basic functionality of the FAQ search log.
  */
@@ -10,10 +45,10 @@ class FAQSearchLoggingTest extends FunctionalTest
     {
         parent::setUp();
 
-        $this->admin = $this->objFromFixture('Member', 'admin');
+        $this->admin = $this->objFromFixture(Member::class, 'admin');
 
         $this->loginAs($this->admin);
-        $this->faqPage = $this->objFromFixture('FAQPage', 'faq');
+        $this->faqPage = $this->objFromFixture(FAQPage::class, 'faq');
         $this->faqPage->doPublish();
         $this->logOut();
     }
@@ -23,9 +58,9 @@ class FAQSearchLoggingTest extends FunctionalTest
      */
     public function testSessionStart()
     {
-        $this->assertNull(Session::get('FAQPage'));
+        $this->assertNull(Session::get(FAQPage::class));
         $this->get(Director::makeRelative($this->faqPage->Link()));
-        $this->assertTrue(Session::get('FAQPage'));
+        $this->assertTrue(Session::get(FAQPage::class));
     }
 
     /**
@@ -33,7 +68,7 @@ class FAQSearchLoggingTest extends FunctionalTest
      */
     public function testTrackingIDs()
     {
-        $controller = FAQPage_Controller::create();
+        $controller = FAQPageController::create();
 
         $ids = $controller->getTrackingIDs('5_32');
         $this->assertEquals($ids, array(
@@ -66,13 +101,13 @@ class FAQSearchLoggingTest extends FunctionalTest
         session_id($sessID);
 
         $mockResponse = array(
-            'Matches' => FAQSearchIndex_PaginatedList::create(ArrayList::create(array(
-                $this->objFromFixture('FAQ', 'one')
+            'Matches' => FAQSearchIndexPaginatedList::create(ArrayList::create(array(
+                $this->objFromFixture(FAQ::class, 'one')
             ))),
             'Suggestion' => 'suggestion text'
         );
 
-        $spy = Phockito::spy('FAQPage_Controller');
+        $spy = Phockito::spy(FAQPageController::class);
         Phockito::when($spy)->getSearchQuery(anything())->return(new SearchQuery());
         Phockito::when($spy)->doSearch(anything(), anything(), anything())->return(new ArrayData($mockResponse));
 
@@ -100,16 +135,16 @@ class FAQSearchLoggingTest extends FunctionalTest
         $sessID = uniqid();
         session_id($sessID);
 
-        $mockRequest = new SS_HTTPRequest('GET', '/', array(
-            FAQPage_Controller::$search_term_key => 'test terms'
+        $mockRequest = new HTTPRequest('GET', '/', array(
+            FAQPageController::$search_term_key => 'test terms'
         ));
         $mockResponse = array(
-            'Matches' => FAQSearchIndex_PaginatedList::create(ArrayList::create(array(
-                $this->objFromFixture('FAQ', 'one')
+            'Matches' => FAQSearchIndexPaginatedList::create(ArrayList::create(array(
+                $this->objFromFixture(FAQ::class, 'one')
             ))),
             'Suggestion' => 'suggestion text'
         );
-        $spy = Phockito::spy('FAQPage_Controller');
+        $spy = Phockito::spy(FAQPageController::class);
         $spy->setRequest($mockRequest);
         Phockito::when($spy)->getSearchQuery(anything())->return(new SearchQuery());
         Phockito::when($spy)->doSearch(anything(), anything(), anything())->return(new ArrayData($mockResponse));
@@ -143,24 +178,24 @@ class FAQSearchLoggingTest extends FunctionalTest
         $search = FAQSearch::get()->first();
         session_id($search->SessionID);
 
-        $faq = $this->objFromFixture('FAQ', 'one');
+        $faq = $this->objFromFixture(FAQ::class, 'one');
         $link = Director::makeRelative($this->faqPage->Link('view') . '/' . $faq->ID);
 
-        $request = new SS_HTTPRequest('GET', $link, array(
+        $request = new HTTPRequest('GET', $link, array(
             't' => '1_1'
         ));
         // Need to set params in the request explicitly apparently
         $request->setRouteParams(array(
             'ID' => 1
         ));
-        $controller = new FAQPage_Controller();
+        $controller = new FAQPageController();
 
-        $articles = FAQResults_Article::get();
+        $articles = FAQResultsArticle::get();
         $this->assertEquals($articles->count(), 0);
 
         $controller->view($request);
 
-        $articles = FAQResults_Article::get();
+        $articles = FAQResultsArticle::get();
         $this->assertEquals($articles->count(), 1);
 
         $log = $articles->last();
@@ -179,24 +214,24 @@ class FAQSearchLoggingTest extends FunctionalTest
         $search = FAQSearch::get()->first();
         session_id($search->SessionID);
 
-        $faq = $this->objFromFixture('FAQ', 'one');
+        $faq = $this->objFromFixture(FAQ::class, 'one');
         $link = Director::makeRelative($this->faqPage->Link('view') . '/' . $faq->ID);
 
-        $request = new SS_HTTPRequest('GET', $link, array(
+        $request = new HTTPRequest('GET', $link, array(
             't' => '1_1'
         ));
         // Need to set params in the request explicitly apparently
         $request->setRouteParams(array(
             'ID' => 1
         ));
-        $controller = new FAQPage_Controller();
+        $controller = new FAQPageController();
 
-        $articles = FAQResults_Article::get();
+        $articles = FAQResultsArticle::get();
         $this->assertEquals($articles->count(), 0);
 
         $controller->view($request);
 
-        $articles = FAQResults_Article::get();
+        $articles = FAQResultsArticle::get();
         $this->assertEquals($articles->count(), 1);
 
         $log = $articles->last();
@@ -207,7 +242,7 @@ class FAQSearchLoggingTest extends FunctionalTest
         // View the article again
         $controller->view($request);
 
-        $articles = FAQResults_Article::get();
+        $articles = FAQResultsArticle::get();
         $this->assertEquals($articles->count(), 1);
     }
 
@@ -223,24 +258,24 @@ class FAQSearchLoggingTest extends FunctionalTest
         $this->assertTrue($search->SessionID != $sessionID);
         session_id($sessionID);
 
-        $faq = $this->objFromFixture('FAQ', 'one');
+        $faq = $this->objFromFixture(FAQ::class, 'one');
         $link = Director::makeRelative($this->faqPage->Link('view') . '/' . $faq->ID);
 
-        $request = new SS_HTTPRequest('GET', $link, array(
+        $request = new HTTPRequest('GET', $link, array(
             't' => '1_1'
         ));
         // Need to set params in the request explicitly apparently
         $request->setRouteParams(array(
             'ID' => 1
         ));
-        $controller = new FAQPage_Controller();
+        $controller = new FAQPageController();
 
-        $articles = FAQResults_Article::get();
+        $articles = FAQResultsArticle::get();
         $this->assertEquals($articles->count(), 0);
 
         $controller->view($request);
 
-        $articles = FAQResults_Article::get();
+        $articles = FAQResultsArticle::get();
         $this->assertEquals($articles->count(), 0);
     }
 
@@ -254,13 +289,13 @@ class FAQSearchLoggingTest extends FunctionalTest
         session_id($search->SessionID);
 
         $mockResponse = array(
-            'Matches' => FAQSearchIndex_PaginatedList::create(ArrayList::create(array(
-                $this->objFromFixture('FAQ', 'one')
+            'Matches' => FAQSearchIndexPaginatedList::create(ArrayList::create(array(
+                $this->objFromFixture(FAQ::class, 'one')
             ))),
             'Suggestion' => 'suggestion text'
         );
 
-        $spy = Phockito::spy('FAQPage_Controller');
+        $spy = Phockito::spy(FAQPageController::class);
         Phockito::when($spy)->getSearchQuery(anything())->return(new SearchQuery());
         Phockito::when($spy)->doSearch(anything(), anything(), anything())->return(new ArrayData($mockResponse));
         Phockito::when($spy)->getTrackingIDs(anything())->return(array(
@@ -268,7 +303,7 @@ class FAQSearchLoggingTest extends FunctionalTest
             'trackingResultsID' => null
         ));
 
-        $request = new SS_HTTPRequest('GET', $this->faqPage->Link(), array(
+        $request = new HTTPRequest('GET', $this->faqPage->Link(), array(
             't' => '1_',
             'start' => 20
         ));
@@ -299,13 +334,13 @@ class FAQSearchLoggingTest extends FunctionalTest
         session_id($sessionID);
 
         $mockResponse = array(
-            'Matches' => FAQSearchIndex_PaginatedList::create(ArrayList::create(array(
-                $this->objFromFixture('FAQ', 'one')
+            'Matches' => FAQSearchIndexPaginatedList::create(ArrayList::create(array(
+                $this->objFromFixture(FAQ::class, 'one')
             ))),
             'Suggestion' => 'suggestion text'
         );
 
-        $spy = Phockito::spy('FAQPage_Controller');
+        $spy = Phockito::spy(FAQPageController::class);
         Phockito::when($spy)->getSearchQuery(anything())->return(new SearchQuery());
         Phockito::when($spy)->doSearch(anything(), anything(), anything())->return(new ArrayData($mockResponse));
         Phockito::when($spy)->getTrackingIDs(anything())->return(array(
@@ -313,7 +348,7 @@ class FAQSearchLoggingTest extends FunctionalTest
             'trackingResultsID' => null
         ));
 
-        $request = new SS_HTTPRequest('GET', $this->faqPage->Link(), array(
+        $request = new HTTPRequest('GET', $this->faqPage->Link(), array(
             't' => '1_',
             'start' => 20
         ));
@@ -345,21 +380,21 @@ class FAQSearchLoggingTest extends FunctionalTest
         $sessionID = 6543219;
         $this->assertTrue($search->SessionID != $sessionID);
 
-        $faq = $this->objFromFixture('FAQ', 'one');
+        $faq = $this->objFromFixture(FAQ::class, 'one');
         $link = Director::makeRelative($this->faqPage->Link('view') . '/' . $faq->ID);
 
-        $request = new SS_HTTPRequest('GET', $link, array(
+        $request = new HTTPRequest('GET', $link, array(
             't' => '1_1'
         ));
         // Need to set params in the request explicitly apparently
         $request->setRouteParams(array(
             'ID' => 1
         ));
-        $controller = new FAQPage_Controller();
+        $controller = new FAQPageController();
 
         session_id($search->SessionID);
         $render = $controller->view($request);
-        $this->assertEquals(get_class($render['FAQRatingForm']), 'Form');
+        $this->assertEquals(get_class($render['FAQRatingForm']), Form::class);
 
         session_id($sessionID);
         $render = $controller->view($request);
@@ -373,22 +408,22 @@ class FAQSearchLoggingTest extends FunctionalTest
     {
         $search = FAQSearch::get()->first();
 
-        $faq = $this->objFromFixture('FAQ', 'one');
+        $faq = $this->objFromFixture(FAQ::class, 'one');
         $link = Director::makeRelative($this->faqPage->Link('view') . '/' . $faq->ID);
 
-        $request = new SS_HTTPRequest('GET', $link, array(
+        $request = new HTTPRequest('GET', $link, array(
             't' => '1_1'
         ));
         // Need to set params in the request explicitly apparently
         $request->setRouteParams(array(
             'ID' => 1
         ));
-        $controller = new FAQPage_Controller();
+        $controller = new FAQPageController();
 
         session_id($search->SessionID);
         $render = $controller->view($request);
 
-        $articles = FAQResults_Article::get();
+        $articles = FAQResultsArticle::get();
         $this->assertEquals($articles->count(), 1);
 
         $data = array(
@@ -398,10 +433,10 @@ class FAQSearchLoggingTest extends FunctionalTest
             'MobilePhones_1' => null
         );
         $form = $render['FAQRatingForm'];
-        $request = new SS_HTTPRequest('GET', $this->faqPage->Link('RatingForm'));
+        $request = new HTTPRequest('GET', $this->faqPage->Link('RatingForm'));
 
         $controller->rate($data, $form, $request);
-        $articles = FAQResults_Article::get();
+        $articles = FAQResultsArticle::get();
         $this->assertEquals($articles->count(), 1);
 
         $log = $articles->last();
@@ -410,7 +445,7 @@ class FAQSearchLoggingTest extends FunctionalTest
         $this->assertEquals($log->ResultSetID, 1);
         $this->assertEquals($log->FAQID, $faq->ID);
         $this->assertEquals($log->Useful, $data['Useful']);
-        $this->assertEquals($log->Comment, $data['Comment']);
+        $this->assertEquals($log->Comment, $data[Comment::class]);
     }
 
     /**
@@ -422,22 +457,22 @@ class FAQSearchLoggingTest extends FunctionalTest
         $sessionID = 6543219;
         $this->assertTrue($search->SessionID != $sessionID);
 
-        $faq = $this->objFromFixture('FAQ', 'one');
+        $faq = $this->objFromFixture(FAQ::class, 'one');
         $link = Director::makeRelative($this->faqPage->Link('view') . '/' . $faq->ID);
 
-        $request = new SS_HTTPRequest('GET', $link, array(
+        $request = new HTTPRequest('GET', $link, array(
             't' => '1_1'
         ));
         // Need to set params in the request explicitly apparently
         $request->setRouteParams(array(
             'ID' => 1
         ));
-        $controller = new FAQPage_Controller();
+        $controller = new FAQPageController();
 
         session_id($search->SessionID);
         $render = $controller->view($request);
 
-        $articles = FAQResults_Article::get();
+        $articles = FAQResultsArticle::get();
         $this->assertEquals($articles->count(), 1);
         $origLog = $articles->last();
 
@@ -448,12 +483,12 @@ class FAQSearchLoggingTest extends FunctionalTest
             'MobilePhones_1' => null
         );
         $form = $render['FAQRatingForm'];
-        $request = new SS_HTTPRequest('GET', $this->faqPage->Link('RatingForm'));
+        $request = new HTTPRequest('GET', $this->faqPage->Link('RatingForm'));
 
         session_id($sessionID);
 
         $controller->rate($data, $form, $request);
-        $articles = FAQResults_Article::get();
+        $articles = FAQResultsArticle::get();
         $this->assertEquals($articles->count(), 1);
 
         $log = $articles->last();

@@ -1,4 +1,30 @@
 <?php
+
+namespace Silverstripe\FAQ\Tests;
+
+
+
+
+
+
+use Phockito;
+
+
+
+
+use Exception;
+use SilverStripe\Taxonomy\TaxonomyTerm;
+use Silverstripe\FAQ\PageTypes\FAQPage;
+use Silverstripe\FAQ\Model\FAQ;
+use Silverstripe\FAQ\PageTypes\FAQPageController;
+use SilverStripe\Core\Injector\Injector;
+use SilverStripe\ORM\ArrayList;
+use SilverStripe\ORM\PaginatedList;
+use SilverStripe\FullTextSearch\Search\Queries\SearchQuery;
+use SilverStripe\View\ArrayData;
+use SilverStripe\Dev\FunctionalTest;
+
+
 /**
  * Tests basic functionality of FAQPage
  */
@@ -16,14 +42,14 @@ class FAQPageTest extends FunctionalTest
         parent::setUp();
 
         // categories
-        $Vehicles = $this->objFromFixture('TaxonomyTerm', 'Vehicles')->getTaxonomy();
-        $Cars = $this->objFromFixture('TaxonomyTerm', 'Cars')->getTaxonomy();
-        $Fords = $this->objFromFixture('TaxonomyTerm', 'Fords')->getTaxonomy();
+        $Vehicles = $this->objFromFixture(TaxonomyTerm::class, 'Vehicles')->getTaxonomy();
+        $Cars = $this->objFromFixture(TaxonomyTerm::class, 'Cars')->getTaxonomy();
+        $Fords = $this->objFromFixture(TaxonomyTerm::class, 'Fords')->getTaxonomy();
 
         $Cars->Children()->add($Fords);
         $Vehicles->Children()->add($Cars);
 
-        $Roads = $this->objFromFixture('TaxonomyTerm', 'Roads')->getTaxonomy();
+        $Roads = $this->objFromFixture(TaxonomyTerm::class, 'Roads')->getTaxonomy();
 
         // create faq page
         $this->_page = new FAQPage(array(
@@ -64,9 +90,9 @@ class FAQPageTest extends FunctionalTest
         $this->_page2->FeaturedFAQs()->add($this->faq1);
         $this->_page2->FeaturedFAQs()->add($this->faq2);
 
-        $this->_page2_controller = new FAQPage_Controller($this->_page2);
+        $this->_page2_controller = new FAQPageController($this->_page2);
 
-        $this->controller = Injector::inst()->create('FAQPage_Controller');
+        $this->controller = Injector::inst()->create(FAQPageController::class);
     }
 
     /**
@@ -119,14 +145,14 @@ class FAQPageTest extends FunctionalTest
         $mockResponse['Suggestion'] = 'suggestion text';
 
         // testing good response, get one search result
-        $spy = Phockito::spy('FAQPage_Controller');
+        $spy = Phockito::spy(FAQPageController::class);
         Phockito::when($spy)->getSearchQuery(anything())->return(new SearchQuery());
         Phockito::when($spy)->doSearch(anything(), anything(), anything())->return(new ArrayData($mockResponse));
         $response = $spy->search();
         $this->assertSame($mockResponse['Suggestion'], $response['SearchSuggestion']['Suggestion']);
 
         // testing error with solr
-        $spy1 = Phockito::spy('FAQPage_Controller');
+        $spy1 = Phockito::spy(FAQPageController::class);
         Phockito::when($spy1)->getSearchQuery(anything())->return(new SearchQuery());
         Phockito::when($spy1)->doSearch(anything(), anything(), anything())->throw(new Exception("Some error"));
         $response = $spy1->search();
@@ -149,7 +175,7 @@ class FAQPageTest extends FunctionalTest
         $mockResponse['Suggestion'] = 'suggestion text';
 
         // testing total items are equal to set in _page, and there's no more than one page in pagination
-        $spy = Phockito::spy('FAQPage_Controller', $this->_page);
+        $spy = Phockito::spy(FAQPageController::class, $this->_page);
         Phockito::when($spy)->getSearchQuery(anything())->return(new SearchQuery());
         Phockito::when($spy)->doSearch(anything(), anything(), anything())->return(new ArrayData($mockResponse));
         $response = $spy->search();
@@ -175,7 +201,7 @@ class FAQPageTest extends FunctionalTest
      */
     public function testGetSelectedIDs()
     {
-        $CategoryID = $this->objFromFixture('TaxonomyTerm', 'Vehicles')->getTaxonomy()->ID;
+        $CategoryID = $this->objFromFixture(TaxonomyTerm::class, 'Vehicles')->getTaxonomy()->ID;
         $filterCategory = $this->_page2_controller->Categories()->filter('ID', $CategoryID)->first();
         $selectedChildIDS = $this->_page2_controller->getSelectedIDs($filterCategory);
         $this->assertEquals(array(1, 2, 4), $selectedChildIDS);

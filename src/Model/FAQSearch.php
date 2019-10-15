@@ -1,4 +1,42 @@
 <?php
+
+namespace Silverstripe\FAQ\Model;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+use Silverstripe\FAQ\Model\FAQResults;
+use Silverstripe\FAQ\Model\FAQResultsArticle;
+use SilverStripe\Forms\ReadonlyField;
+use SilverStripe\Forms\GridField\GridFieldConfig_RecordEditor;
+use SilverStripe\Forms\GridField\GridField;
+use SilverStripe\Forms\GridField\GridFieldConfig;
+use SilverStripe\Forms\GridField\GridFieldSortableHeader;
+use SilverStripe\Forms\GridField\GridFieldButtonRow;
+use SilverStripe\Forms\GridField\GridFieldToolbarHeader;
+use SilverStripe\Forms\GridField\GridFieldDataColumns;
+use Silverstripe\FAQ\Form\FAQResultsArticleEditButton;
+use Silverstripe\FAQ\Form\FAQResultsArticleDetailForm;
+use SilverStripe\Forms\GridField\GridFieldFooter;
+use Silverstripe\FAQ\Search\FAQSearchSearchContext;
+use SilverStripe\Security\Permission;
+use Silverstripe\FAQ\Model\FAQ;
+use SilverStripe\ORM\DataObject;
+use SilverStripe\Security\PermissionProvider;
+
+
 /**
  * Representing individual searches for the search log.
  */
@@ -27,8 +65,8 @@ class FAQSearch extends DataObject implements PermissionProvider
     );
 
     private static $has_many = array(
-        'Results' => 'FAQResults',
-        'Articles' => 'FAQResults_Article'
+        'Results' => FAQResults::class,
+        'Articles' => FAQResultsArticle::class
     );
 
     private static $default_sort = '"Created" DESC';
@@ -71,8 +109,8 @@ class FAQSearch extends DataObject implements PermissionProvider
             new GridFieldToolbarHeader(),
             $sort,
             new GridFieldDataColumns(),
-            new FAQResults_Article_EditButton(),
-            new FAQResults_Article_DetailForm(),
+            new FAQResultsArticleEditButton(),
+            new FAQResultsArticleDetailForm(),
             new GridFieldFooter()
         );
 
@@ -89,7 +127,7 @@ class FAQSearch extends DataObject implements PermissionProvider
         $fields = $this->scaffoldSearchFields();
         $filters = $this->defaultSearchFilters();
 
-        return new FAQSearch_SearchContext(
+        return new FAQSearchSearchContext(
             $this->class,
             $fields,
             $filters
@@ -158,7 +196,7 @@ class FAQSearch extends DataObject implements PermissionProvider
                 ),
                 'category' => _t(
                     'Faq.Category',
-                    'FAQ'
+                    FAQ::class
                 ),
             ),
             'FAQ_EDIT_SEARCH_LOGS' => array(
@@ -168,7 +206,7 @@ class FAQSearch extends DataObject implements PermissionProvider
                 ),
                 'category' => _t(
                     'Faq.Category',
-                    'FAQ'
+                    FAQ::class
                 ),
             ),
             'FAQ_DELETE_SEARCH_LOGS' => array(
@@ -178,7 +216,7 @@ class FAQSearch extends DataObject implements PermissionProvider
                 ),
                 'category' => _t(
                     'Faq.Category',
-                    'FAQ'
+                    FAQ::class
                 ),
             ),
             'FAQ_IGNORE_SEARCH_LOGS' => array(
@@ -188,112 +226,9 @@ class FAQSearch extends DataObject implements PermissionProvider
                 ),
                 'category' => _t(
                     'Faq.Category',
-                    'FAQ'
+                    FAQ::class
                 ),
             ),
         );
-    }
-}
-
-/**
- * Admin area for search log.
- */
-class FAQSearch_Admin extends ModelAdmin
-{
-    private static $url_segment = 'faqsearch';
-
-    private static $managed_models = array(
-        'FAQSearch'
-    );
-
-    private static $menu_title = 'Search Log';
-}
-
-/**
- * Custom Search Context for FAQSearch, with different filters to the ones provided by scaffolding
- */
-class FAQSearch_SearchContext extends SearchContext
-{
-
-    public function __construct($modelClass, $fields = null, $filters = null)
-    {
-        parent::__construct($modelClass, $fields, $filters);
-
-        // add before filter
-        $date = new DateField('CreatedBefore', 'Created before');
-        $date->setRightTitle('e.g. ' . date('Y-m-d'));
-        $date->setAttribute('placeholder', 'yyyy-mm-dd');
-
-        $dateFilter = new LessThanFilter('CreatedBefore');
-        $dateFilter->setName('Created');
-
-        $this->addField($date);
-        $this->addFilter($dateFilter);
-
-        // add after filter
-        $date = new DateField('CreatedAfter', 'Created after (inclusive)');
-        $date->setRightTitle('e.g. ' . date('Y-m-d'));
-        $date->setAttribute('placeholder', 'yyyy-mm-dd');
-
-        $dateFilter = new GreaterThanOrEqualFilter('CreatedAfter');
-        $dateFilter->setName('Created');
-
-        $this->addField($date);
-        $this->addFilter($dateFilter);
-
-        // filter based on what articles were rated
-        $usefulOptions = array('Y' => 'Yes', 'N' => 'No', 'U' => 'Unrated');
-        $useful = new DropdownField('Useful', 'How articles were rated in search', $usefulOptions);
-        $useful->setEmptyString('Any');
-
-        $this->addField($useful);
-
-        // filter for rating comments
-        $this->addField(
-            DropdownField::create('RatingComment', 'Whether articles were commented on', array(
-                'WithComment' => 'Has comments'
-            ))->setEmptyString('Any')
-        );
-
-        // filter if any results were returned
-        $results = new DropdownField('HasResults', 'Has results', array('results' => 'With results', 'noresults' => 'Without results'));
-        $results->setEmptyString('Any');
-
-        $this->addField($results);
-
-        // filter for whether the search log was archived or not
-        $archived = new DropdownField('IsArchived', 'Show archived searches', array('archived' => 'Archived', 'notarchived' => 'Not Archived'));
-        $archived->setEmptyString('Any');
-
-        $this->addField($archived);
-    }
-
-    public function getResults($params, $sort = false, $limit = false)
-    {
-        $list = parent::getResults($params, $sort = false, $limit = false);
-
-        if (isset($params['Useful']) && $params['Useful']) {
-            $useful = Convert::raw2sql($params['Useful']);
-
-            $list = $list->filter('Articles.Useful:ExactMatch', $useful);
-        }
-
-        if (isset($params['HasResults']) && $params['HasResults']) {
-            $filter = 'TotalResults' . (($params['HasResults'] == 'results') ? ':GreaterThanOrEqual' : ':LessThan');
-            $list = $list->filter($filter, 1);
-        }
-
-        // default not archived, so will cater for that
-        if (isset($params['IsArchived']) && $params['IsArchived']) {
-            $archived = (isset($params['IsArchived']) && $params['IsArchived'] == 'archived');
-            $list = $list->filter('Archived', $archived);
-        }
-
-        if (isset($params['RatingComment']) && $params['RatingComment']) {
-            // Need to include the filter to ensure the table is joined
-            $list = $list->filter('Articles.ID:GreaterThan', 0)->where("\"FAQResults_Article\".\"Comment\" IS NOT NULL");
-        }
-
-        return $list;
     }
 }

@@ -1,4 +1,16 @@
 <?php
+
+namespace Silverstripe\FAQ\Tests;
+
+
+
+
+use Silverstripe\FAQ\Model\FAQ;
+use SilverStripe\Taxonomy\TaxonomyTerm;
+use SilverStripe\Core\Config\Config;
+use SilverStripe\Dev\SapphireTest;
+
+
 /**
  * FAQ Module Unit Tests
  */
@@ -32,12 +44,12 @@ class FAQTest extends SapphireTest
         // get root we assume is set by config
         $root = FAQ::getRootCategory();
         $this->assertTrue($root->exists());
-        $this->assertEquals('TaxonomyTerm', $root->ClassName);
+        $this->assertEquals(TaxonomyTerm::class, $root->ClassName);
 
         // change config to something we know is not in the taxonomy table
-        Config::inst()->update('FAQ', 'taxonomy_name', 'lolipopRANDOMCategory');
+        Config::inst()->update(FAQ::class, 'taxonomy_name', 'lolipopRANDOMCategory');
         $root = FAQ::getRootCategory();
         $this->assertTrue($root->exists());
-        $this->assertEquals('TaxonomyTerm', $root->ClassName);
+        $this->assertEquals(TaxonomyTerm::class, $root->ClassName);
     }
 }

@@ -1,5 +1,14 @@
 <?php
 
+namespace Silverstripe\FAQ\Admin;
+
+
+use Silverstripe\FAQ\Model\FAQ;
+use Silverstripe\FAQ\Admin\FAQCsvBulkLoader;
+use SilverStripe\Admin\ModelAdmin;
+
+
+
 /**
  * Model Admin for FAQs search module.
  * Allows a content author to publish and edit questions and answers.
@@ -11,13 +20,13 @@ class FAQAdmin extends ModelAdmin
     private static $url_segment = 'faq';
 
     private static $managed_models = array(
-        'FAQ'
+        FAQ::class
     );
 
     private static $menu_title = 'FAQs';
 
     private static $model_importers = array(
-        'FAQ' => 'FAQCsvBulkLoader'
+        'FAQ' => FAQCsvBulkLoader::class
     );
 
     /**

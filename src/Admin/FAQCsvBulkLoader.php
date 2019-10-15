@@ -1,4 +1,19 @@
 <?php
+
+namespace Silverstripe\FAQ\Admin;
+
+
+
+
+
+
+use SilverStripe\Core\Convert;
+use Silverstripe\FAQ\Model\FAQ;
+use SilverStripe\Core\Config\Config;
+use SilverStripe\Taxonomy\TaxonomyTerm;
+use SilverStripe\Dev\CsvBulkLoader;
+
+
 /**
  * Extends Csv loader to handle Categories (Taxonomy DataObject) better.
  */
@@ -60,7 +75,7 @@ class FAQCsvBulkLoader extends CsvBulkLoader
 
         $category = $root->getChildDeep(array('Name' => $val));
 
-        if ((!$category || !$category->exists()) && $val && Config::inst()->get('FAQ', 'create_missing_category')) {
+        if ((!$category || !$category->exists()) && $val && Config::inst()->get(FAQ::class, 'create_missing_category')) {
             $category = new TaxonomyTerm(array(
                 'Name' => $val,
                 'ParentID' => $root->ID

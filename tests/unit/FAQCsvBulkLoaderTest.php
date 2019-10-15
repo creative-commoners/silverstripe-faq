@@ -1,5 +1,13 @@
 <?php
 
+namespace Silverstripe\FAQ\Tests;
+
+
+use Silverstripe\FAQ\Model\FAQ;
+use SilverStripe\Dev\SapphireTest;
+
+
+
 /**
  * @package faq
  * @subpackage tests
@@ -18,8 +26,8 @@ class FAQCsvBulkLoaderTest extends SapphireTest {
 
         $this->assertTrue(is_callable($callback), 'Category field is a callable function');
 
-        $faqInCategory = $this->objFromFixture('FAQ', 'faqInCategory');
-        $faqNoCategory = $this->objFromFixture('FAQ', 'faqNoCategory');
+        $faqInCategory = $this->objFromFixture(FAQ::class, 'faqInCategory');
+        $faqNoCategory = $this->objFromFixture(FAQ::class, 'faqNoCategory');
 
         $noCategoryName = $callback($faqNoCategory->Category());
         $categoryName = $callback($faqInCategory->Category());

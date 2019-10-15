@@ -1,0 +1,26 @@
+mappings:
+  GridFieldBulkActionArchiveHandler: Silverstripe\FAQ\Form\GridFieldBulkActionArchiveHandler
+  FAQResults_Article_DetailForm_ItemRequest: Silverstripe\FAQ\Form\FAQResultsArticleDetailFormItemRequest
+  FAQResults_Article_EditButton: Silverstripe\FAQ\Form\FAQResultsArticleEditButton
+  FAQResults_Article_DetailForm: Silverstripe\FAQ\Form\FAQResultsArticleDetailForm
+  FAQSearch_SearchContext: Silverstripe\FAQ\Search\FAQSearchSearchContext
+  FAQSearchIndex: Silverstripe\FAQ\Search\FAQSearchIndex
+  FAQSearchIndex_PaginatedList: Silverstripe\FAQ\Search\FAQSearchIndexPaginatedList
+  FAQCsvBulkLoader: Silverstripe\FAQ\Admin\FAQCsvBulkLoader
+  FAQAdmin: Silverstripe\FAQ\Admin\FAQAdmin
+  FAQSearch_Admin: Silverstripe\FAQ\Admin\FAQSearchAdmin
+  FAQResults_Article: Silverstripe\FAQ\Model\FAQResultsArticle
+  FAQ: Silverstripe\FAQ\Model\FAQ
+  FAQSearch: Silverstripe\FAQ\Model\FAQSearch
+  FAQResults: Silverstripe\FAQ\Model\FAQResults
+  FAQTaxonomyTermExtension: Silverstripe\FAQ\Extensions\FAQTaxonomyTermExtension
+  FAQSearchBulkEditExtension: Silverstripe\FAQ\Extensions\FAQSearchBulkEditExtension
+  FAQResults_Extension: Silverstripe\FAQ\Extensions\FAQResultsExtension
+  FAQPage: Silverstripe\FAQ\PageTypes\FAQPage
+  FAQPage_Controller: Silverstripe\FAQ\PageTypes\FAQPageController
+  FAQSearchLoggingTest: Silverstripe\FAQ\Tests\FAQSearchLoggingTest
+  FAQSearchIndexTest: Silverstripe\FAQ\Tests\FAQSearchIndexTest
+  FAQCsvBulkLoaderTest: Silverstripe\FAQ\Tests\FAQCsvBulkLoaderTest
+  FAQPermissionsTest: Silverstripe\FAQ\Tests\FAQPermissionsTest
+  FAQTest: Silverstripe\FAQ\Tests\FAQTest
+  FAQPageTest: Silverstripe\FAQ\Tests\FAQPageTest

@@ -1,4 +1,44 @@
 <?php
+
+namespace Silverstripe\FAQ\Model;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+use SilverStripe\Taxonomy\TaxonomyTerm;
+use Silverstripe\FAQ\Model\FAQResultsArticle;
+use SilverStripe\Forms\DropdownField;
+use SilverStripe\ORM\Filters\ExactMatchFilter;
+use SilverStripe\ORM\Search\SearchContext;
+use SilverStripe\Forms\TreeDropdownField;
+use SilverStripe\Forms\ReadonlyField;
+use SilverStripe\Forms\GridField\GridFieldConfig_RecordViewer;
+use SilverStripe\Forms\GridField\GridField;
+use SilverStripe\Forms\RequiredFields;
+use Silverstripe\FAQ\PageTypes\FAQPage;
+use SilverStripe\Control\Controller;
+use SilverStripe\Dev\Deprecation;
+use SilverStripe\Core\Config\Config;
+use Silverstripe\FAQ\Model\FAQ;
+use Silverstripe\FAQ\Extensions\FAQTaxonomyTermExtension;
+use SilverStripe\Security\Permission;
+use SilverStripe\ORM\DataObject;
+use SilverStripe\Security\PermissionProvider;
+
+
 /**
  * DataObject for a single FAQ related to the FAQ search module.
  * Provides db fields for a question and an answer.
@@ -23,11 +63,11 @@ class FAQ extends DataObject implements PermissionProvider
     );
 
     private static $has_one = array(
-        'Category' => 'TaxonomyTerm'
+        'Category' => TaxonomyTerm::class
     );
 
     private static $has_many = array(
-        'Views' => 'FAQResults_Article'
+        'Views' => FAQResultsArticle::class
     );
 
     /**
@@ -102,7 +142,7 @@ class FAQ extends DataObject implements PermissionProvider
         $categoryField = new TreeDropdownField(
             'CategoryID',
             'Category',
-            'TaxonomyTerm',
+            TaxonomyTerm::class,
             'ID',
             'Name'
         );
@@ -191,7 +231,7 @@ class FAQ extends DataObject implements PermissionProvider
     {
         $faqPage = Controller::curr();
 
-        if ($faqPage->exists() && $faqPage->ClassName === 'FAQPage') {
+        if ($faqPage->exists() && $faqPage->ClassName === FAQPage::class) {
             return $faqPage->MoreLinkText;
         }
 
@@ -207,7 +247,7 @@ class FAQ extends DataObject implements PermissionProvider
     public static function getAllCategories()
     {
         Deprecation::notice('2.0', 'getAllCategories is deprecated. Create extended function');
-        $taxName = Config::inst()->get('FAQ', 'taxonomy_name');
+        $taxName = Config::inst()->get(FAQ::class, 'taxonomy_name');
         $root = FAQTaxonomyTermExtension::getOrCreate(
             array('Name'=> $taxName),
             array('Name'=> $taxName, 'ParentID'=> 0)
@@ -223,7 +263,7 @@ class FAQ extends DataObject implements PermissionProvider
      */
     public static function getRootCategory()
     {
-        $taxName = Config::inst()->get('FAQ', 'taxonomy_name');
+        $taxName = Config::inst()->get(FAQ::class, 'taxonomy_name');
         $root = FAQTaxonomyTermExtension::getOrCreate(
             array('Name' => $taxName),
             array('Name' => $taxName, 'ParentID' => 0)
@@ -268,7 +308,7 @@ class FAQ extends DataObject implements PermissionProvider
                 ),
                 'category' => _t(
                     'Faq.Category',
-                    'FAQ'
+                    FAQ::class
                 ),
             ),
             'FAQ_DELETE' => array(
@@ -278,7 +318,7 @@ class FAQ extends DataObject implements PermissionProvider
                 ),
                 'category' => _t(
                     'Faq.Category',
-                    'FAQ'
+                    FAQ::class
                 ),
             ),
             'FAQ_CREATE' => array(
@@ -288,7 +328,7 @@ class FAQ extends DataObject implements PermissionProvider
                 ),
                 'category' => _t(
                     'Faq.Category',
-                    'FAQ'
+                    FAQ::class
                 ),
             )
         );

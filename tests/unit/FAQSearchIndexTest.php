@@ -1,5 +1,14 @@
 <?php
 
+namespace Silverstripe\FAQ\Tests;
+
+
+
+use Silverstripe\FAQ\Search\FAQSearchIndex;
+use SilverStripe\Dev\SapphireTest;
+
+
+
 /**
  * FAQSearchIndex Module Unit Tests
  */

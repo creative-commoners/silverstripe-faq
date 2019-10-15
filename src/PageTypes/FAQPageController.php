@@ -1,6 +1,66 @@
 <?php
 
-class FAQPage_Controller extends Page_Controller
+namespace Silverstripe\FAQ\PageTypes;
+
+
+
+
+
+
+
+
+
+
+
+
+
+use Exception;
+use SS_Log;
+
+
+
+
+
+
+
+
+
+
+
+
+
+use Silverstripe\FAQ\Search\FAQSearchIndex;
+use Silverstripe\FAQ\Model\FAQ;
+use SilverStripe\View\Requirements;
+use Silverstripe\FAQ\PageTypes\FAQPage;
+use SilverStripe\Control\Session;
+use SilverStripe\Control\HTTPRequest;
+use SilverStripe\Security\Permission;
+use Silverstripe\FAQ\Model\FAQResultsArticle;
+use Silverstripe\FAQ\Model\FAQSearch;
+use SilverStripe\ORM\ArrayList;
+use SilverStripe\Control\Controller;
+use SilverStripe\CMS\Controllers\ContentController;
+use Silverstripe\FAQ\Model\FAQResults;
+use SilverStripe\FullTextSearch\Search\Queries\SearchQuery;
+use SilverStripe\Core\Config\Config;
+use SilverStripe\Control\Director;
+use SilverStripe\Control\RSS\RSSFeed;
+use SilverStripe\ORM\FieldType\DBField;
+use SilverStripe\View\ArrayData;
+use SilverStripe\Forms\OptionsetField;
+use SilverStripe\Comments\Model\Comment;
+use SilverStripe\Forms\TextareaField;
+use SilverStripe\Forms\LiteralField;
+use SilverStripe\Forms\HiddenField;
+use SilverStripe\Forms\FieldList;
+use SilverStripe\Forms\FormAction;
+use SilverStripe\Forms\Form;
+use PageController;
+
+
+
+class FAQPageController extends PageController
 {
     private static $allowed_actions = array(
         'view',
@@ -32,10 +92,10 @@ class FAQPage_Controller extends Page_Controller
     /**
      * Solr configuration
      */
-    public static $search_index_class = 'FAQSearchIndex';
+    public static $search_index_class = FAQSearchIndex::class;
     public static $classes_to_search = array(
         array(
-            'class' => 'FAQ',
+            'class' => FAQ::class,
             'includeSubclasses' => true
         )
     );
@@ -51,9 +111,9 @@ class FAQPage_Controller extends Page_Controller
      */
     public function startSession()
     {
-        if (!Session::get('FAQPage')) {
+        if (!Session::get(FAQPage::class)) {
             // Ensure that session is started for tracking behaviour, essential for linking behaviour to a user
-            Session::set('FAQPage', true);
+            Session::set(FAQPage::class, true);
             Session::save();
         }
     }
@@ -79,7 +139,7 @@ class FAQPage_Controller extends Page_Controller
      *
      * @return array|SS_HTTPResponse FAQ content or 404 error if FAQ not found
      */
-    public function view(SS_HTTPRequest $request)
+    public function view(HTTPRequest $request)
     {
         $this->startSession();
         $faq = FAQ::get()->filter('ID', $request->param('ID'))->first();
@@ -97,7 +157,7 @@ class FAQPage_Controller extends Page_Controller
             $trackingIDs = $this->getTrackingIDs($request->getVar('t'));
 
             // If there is an article log for the same article attached to the search and results set logs, reuse it
-            $articleLog = FAQResults_Article::get()->filter(array(
+            $articleLog = FAQResultsArticle::get()->filter(array(
                 'SearchID' => $trackingIDs['trackingSearchID'],
                 'ResultSetID' => $trackingIDs['trackingResultsID'],
                 'SessionID' => $sessID,
@@ -112,7 +172,7 @@ class FAQPage_Controller extends Page_Controller
                 ))->first();
 
                 if ($searchLog && $searchLog->exists()) {
-                    $articleLog = FAQResults_Article::create(array(
+                    $articleLog = FAQResultsArticle::create(array(
                         'SearchID' => $trackingIDs['trackingSearchID'],
                         'ResultSetID' => $trackingIDs['trackingResultsID'],
                         'FAQID' => $faq->ID,
@@ -273,7 +333,7 @@ class FAQPage_Controller extends Page_Controller
      * @param  SS_HTTPRequest $request Current request
      * @return int                     The search log ID for the current search
      */
-    public function findTrackingID(SS_HTTPRequest $request) {
+    public function findTrackingID(HTTPRequest $request) {
 
         // Use the GET param first
         $trackingIDs = $this->getTrackingIDs($request->getVar('t'));
@@ -347,7 +407,7 @@ class FAQPage_Controller extends Page_Controller
         );
 
         // add optional dictionary
-        if($searchParams = Config::inst()->get('FAQSearchIndex', 'search_params')) {
+        if($searchParams = Config::inst()->get(FAQSearchIndex::class, 'search_params')) {
             $params = array_merge($params, $searchParams);
             //$params["spellcheck.dictionary"] = $dictionary;
         }
@@ -601,7 +661,7 @@ class FAQPage_Controller extends Page_Controller
                 'Y' => 'Helpful',
                 'N' => 'Unhelpful'
             )),
-            TextareaField::create('Comment'),
+            TextareaField::create(Comment::class),
             LiteralField::create('CharCounter', '<div class="faq__char-counter pull-right"></div>'),
             HiddenField::create('ID', '')
         );
@@ -628,21 +688,21 @@ class FAQPage_Controller extends Page_Controller
      * @param  SS_HTTPRequest $request Request
      * @return HTTPResponse            Redirects back
      */
-    public function rate(Array $data, Form $form, SS_HTTPRequest $request) {
+    public function rate(Array $data, Form $form, HTTPRequest $request) {
 
         // If the session and matches for the article log, then add rating/comment
         $updated = false;
         $articleLogID = (int) $data['ID'];
         $sessID = session_id();
         if ($sessID && $articleLogID) {
-            $articleLog = FAQResults_Article::get()->filter(array(
+            $articleLog = FAQResultsArticle::get()->filter(array(
                 'ID' => $articleLogID,
                 'SessionID' => $sessID
             ))->first();
 
             if ($articleLog && $articleLog->exists()) {
                 $updated = $articleLog->update(array(
-                    'Comment' => $data['Comment'],
+                    'Comment' => $data[Comment::class],
                     'Useful' => $data['Useful']
                 ))->write();
 

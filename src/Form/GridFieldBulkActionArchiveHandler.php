@@ -1,6 +1,19 @@
 <?php
+
+namespace Silverstripe\FAQ\Form;
+
+
+
+
+
+use Colymba\BulkManager\BulkAction\Handler;
+use SilverStripe\Control\HTTPRequest;
+use SilverStripe\Core\Convert;
+use SilverStripe\Control\HTTPResponse;
+
+
 // do not want to load this handler if it cannot extend
-if (!class_exists('GridFieldBulkActionHandler')) {
+if (!class_exists(Handler::class)) {
     return;
 }
 /**
@@ -10,7 +23,7 @@ if (!class_exists('GridFieldBulkActionHandler')) {
  * @package GridFieldBulkEditingTools
  * @subpackage BulkManager
  */
-class GridFieldBulkActionArchiveHandler extends GridFieldBulkActionHandler
+class GridFieldBulkActionArchiveHandler extends Handler
 {
     /**
      * RequestHandler allowed actions
@@ -34,7 +47,7 @@ class GridFieldBulkActionArchiveHandler extends GridFieldBulkActionHandler
      * @param SS_HTTPRequest $request
      * @return SS_HTTPResponse List of archived records ID
      */
-    public function archive(SS_HTTPRequest $request)
+    public function archive(HTTPRequest $request)
     {
         $ids = array();
 
@@ -45,7 +58,7 @@ class GridFieldBulkActionArchiveHandler extends GridFieldBulkActionHandler
             $record->write();
         }
 
-        $response = new SS_HTTPResponse(Convert::raw2json(array(
+        $response = new HTTPResponse(Convert::raw2json(array(
             'done' => true,
             'records' => $ids
         )));

@@ -1,4 +1,16 @@
 <?php
+
+namespace Silverstripe\FAQ\Tests;
+
+
+use SilverStripe\Security\Member;
+use Silverstripe\FAQ\Model\FAQ;
+use Silverstripe\FAQ\Model\FAQSearch;
+use Silverstripe\FAQ\Model\FAQResults;
+use Silverstripe\FAQ\Model\FAQResultsArticle;
+use SilverStripe\Dev\FunctionalTest;
+
+
 /**
  * Tests basic functionality of the FAQ search log.
  */
@@ -10,13 +22,13 @@ class FAQPermissionsTest extends FunctionalTest
     {
         parent::setUp();
 
-        $this->admin = $this->objFromFixture('Member', 'admin');
-        $this->author = $this->objFromFixture('Member', 'contentAuthor');
-        $this->noperms = $this->objFromFixture('Member', 'noPerms');
-        $this->faq = $this->objFromFixture('FAQ', 'one');
-        $this->log = $this->objFromFixture('FAQSearch', 'one');
-        $this->logResults = $this->objFromFixture('FAQResults', 'one');
-        $this->logArticle = $this->objFromFixture('FAQResults_Article', 'one');
+        $this->admin = $this->objFromFixture(Member::class, 'admin');
+        $this->author = $this->objFromFixture(Member::class, 'contentAuthor');
+        $this->noperms = $this->objFromFixture(Member::class, 'noPerms');
+        $this->faq = $this->objFromFixture(FAQ::class, 'one');
+        $this->log = $this->objFromFixture(FAQSearch::class, 'one');
+        $this->logResults = $this->objFromFixture(FAQResults::class, 'one');
+        $this->logArticle = $this->objFromFixture(FAQResultsArticle::class, 'one');
     }
 
     /**
