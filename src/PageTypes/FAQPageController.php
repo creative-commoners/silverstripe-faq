@@ -72,28 +72,28 @@ class FAQPageController extends PageController
      * @config
      * @var int
      */
-    public static $results_per_page = 10;
+    private static $results_per_page = 10;
 
     /**
      * This is the string used for the url search term variable.
      * E.g. "searchterm" in "http://mysite/faq?searchterm=this+is+a+search"
      * @var string
      */
-    public static $search_term_key = 'q';
-    public static $search_category_key = 'c';
+    private static $search_term_key = 'q';
+    private static $search_category_key = 'c';
 
     /**
      * We replace these keys with real data in the SearchResultsSummary before adding to the template.
      */
-    public static $search_results_summary_current_page_key = '%CurrentPage%';
-    public static $search_results_summary_total_pages_key = '%TotalPages%';
-    public static $search_results_summary_query_key = '%Query%';
+    private static $search_results_summary_current_page_key = '%CurrentPage%';
+    private static $search_results_summary_total_pages_key = '%TotalPages%';
+    private static $search_results_summary_query_key = '%Query%';
 
     /**
      * Solr configuration
      */
-    public static $search_index_class = FAQSearchIndex::class;
-    public static $classes_to_search = array(
+    private static $search_index_class = FAQSearchIndex::class;
+    private static $classes_to_search = array(
         array(
             'class' => FAQ::class,
             'includeSubclasses' => true

@@ -32,7 +32,6 @@ use Silverstripe\FAQ\PageTypes\FAQPage;
 use SilverStripe\Control\Controller;
 use SilverStripe\Dev\Deprecation;
 use SilverStripe\Core\Config\Config;
-use Silverstripe\FAQ\Model\FAQ;
 use Silverstripe\FAQ\Extensions\FAQTaxonomyTermExtension;
 use SilverStripe\Security\Permission;
 use SilverStripe\ORM\DataObject;
@@ -278,22 +277,22 @@ class FAQ extends DataObject implements PermissionProvider
      * @param  Member
      * @return Boolean
      */
-    public function canView($member = null)
+    public function canView($member = null, $context = array())
     {
         return true;
     }
 
     public function canEdit($member = null)
     {
-        return Permission::check('FAQ_EDIT');
+        return Permission::check('FAQ_EDIT', $context = array());
     }
 
-    public function canDelete($member = null)
+    public function canDelete($member = null, $context = array())
     {
         return Permission::check('FAQ_DELETE');
     }
 
-    public function canCreate($member = null)
+    public function canCreate($member = null, $context = array())
     {
         return Permission::check('FAQ_CREATE');
     }

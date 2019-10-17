@@ -166,22 +166,22 @@ class FAQSearch extends DataObject implements PermissionProvider
         return "Search '$this->Term'";
     }
 
-    public function canView($member = false)
+    public function canView($member = false, $context = array())
     {
         return Permission::check('FAQ_VIEW_SEARCH_LOGS');
     }
 
-    public function canEdit($member = false)
+    public function canEdit($member = false, $context = array())
     {
         return Permission::check('FAQ_EDIT_SEARCH_LOGS');
     }
 
-    public function canDelete($member = false)
+    public function canDelete($member = false, $context = array())
     {
         return Permission::check('FAQ_DELETE_SEARCH_LOGS');
     }
 
-    public function canCreate($member = false)
+    public function canCreate($member = false, $context = array())
     {
         return false;
     }
