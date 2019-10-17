@@ -1,6 +1,7 @@
 ---
 Name: faq
-After: 'framework/*','cms/*'
+After:
+  - 'framework/*'
 ---
 FAQSearchIndex:
   options:
