@@ -5,7 +5,6 @@ namespace Silverstripe\FAQ\Search;
 use Silverstripe\FAQ\Model\FAQ;
 use SilverStripe\FullTextSearch\Search\Queries\SearchQuery;
 use SilverStripe\Core\Config\Config;
-use Silverstripe\FAQ\Search\FAQSearchIndex;
 use SilverStripe\FullTextSearch\Solr\Solr;
 use SilverStripe\FullTextSearch\Solr\SolrIndex;
 
@@ -35,9 +34,9 @@ class FAQSearchIndex extends SolrIndex
         $this->addFilterField('Category.ID');
 
         // Add field boosting
-        $this->setFieldBoosting('FAQ_Question', FAQ::config()->question_boost);
-        $this->setFieldBoosting('FAQ_Answer', FAQ::config()->answer_boost);
-        $this->setFieldBoosting('FAQ_Keywords', FAQ::config()->keywords_boost);
+        $this->setFieldBoosting(FAQ::class . '_Question', FAQ::config()->question_boost);
+        $this->setFieldBoosting(FAQ::class . '_Answer', FAQ::config()->answer_boost);
+        $this->setFieldBoosting(FAQ::class . '_Keywords', FAQ::config()->keywords_boost);
 
         $this->extend('updateFAQInit');
     }
@@ -110,7 +109,7 @@ class FAQSearchIndex extends SolrIndex
     public function getExtrasPath()
     {
         // get options from configuration
-        $options = Config::inst()->get(FAQSearchIndex::class, 'options');
+        $options = Config::inst()->get(static::class, 'options');
 
         $globalOptions = Solr::solr_options();
         if (isset($options['extraspath']) && file_exists($options['extraspath'])) {
@@ -125,7 +124,7 @@ class FAQSearchIndex extends SolrIndex
      */
     public function getTemplatesPath()
     {
-        $options = Config::inst()->get(FAQSearchIndex::class, 'options');
+        $options = Config::inst()->get(static::class, 'options');
 
         $globalOptions = Solr::solr_options();
         if (isset($options['templatespath']) && file_exists($options['templatespath'])) {
