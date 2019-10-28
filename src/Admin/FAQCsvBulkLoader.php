@@ -2,17 +2,11 @@
 
 namespace Silverstripe\FAQ\Admin;
 
-
-
-
-
-
 use SilverStripe\Core\Convert;
 use Silverstripe\FAQ\Model\FAQ;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Taxonomy\TaxonomyTerm;
 use SilverStripe\Dev\CsvBulkLoader;
-
 
 /**
  * Extends Csv loader to handle Categories (Taxonomy DataObject) better.
@@ -42,10 +36,9 @@ class FAQCsvBulkLoader extends CsvBulkLoader
     public function formatAnswer(&$obj, $val, $record)
     {
         // is this already html?
-        if (preg_match("/<[a-z][\\s\\S]*>/", $val) === 1 ) {
+        if (preg_match("/<[a-z][\\s\\S]*>/", $val) === 1) {
             $answer = $val;
-        }
-        else {
+        } else {
             $answer = '<p>' . nl2br(Convert::raw2xml($val)) . '</p>';
         }
 
@@ -75,7 +68,14 @@ class FAQCsvBulkLoader extends CsvBulkLoader
 
         $category = $root->getChildDeep(array('Name' => $val));
 
-        if ((!$category || !$category->exists()) && $val && Config::inst()->get(FAQ::class, 'create_missing_category')) {
+        if (
+            (
+                !$category
+                || !$category->exists()
+            )
+            && $val
+            && Config::inst()->get(FAQ::class, 'create_missing_category')
+        ) {
             $category = new TaxonomyTerm(array(
                 'Name' => $val,
                 'ParentID' => $root->ID

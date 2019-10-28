@@ -2,20 +2,12 @@
 
 namespace Silverstripe\FAQ\Search;
 
-
-
-
-
-
-
 use SilverStripe\Forms\DateField;
 use SilverStripe\ORM\Filters\LessThanFilter;
 use SilverStripe\ORM\Filters\GreaterThanOrEqualFilter;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Core\Convert;
 use SilverStripe\ORM\Search\SearchContext;
-
-
 
 /**
  * Custom Search Context for FAQSearch, with different filters to the ones provided by scaffolding
@@ -64,13 +56,19 @@ class FAQSearchSearchContext extends SearchContext
         );
 
         // filter if any results were returned
-        $results = new DropdownField('HasResults', 'Has results', array('results' => 'With results', 'noresults' => 'Without results'));
+        $results = new DropdownField('HasResults', 'Has results', array(
+            'results' => 'With results',
+            'noresults' => 'Without results'
+        ));
         $results->setEmptyString('Any');
 
         $this->addField($results);
 
         // filter for whether the search log was archived or not
-        $archived = new DropdownField('IsArchived', 'Show archived searches', array('archived' => 'Archived', 'notarchived' => 'Not Archived'));
+        $archived = new DropdownField('IsArchived', 'Show archived searches', array(
+            'archived' => 'Archived',
+            'notarchived' => 'Not Archived'
+        ));
         $archived->setEmptyString('Any');
 
         $this->addField($archived);
@@ -99,7 +97,7 @@ class FAQSearchSearchContext extends SearchContext
 
         if (isset($params['RatingComment']) && $params['RatingComment']) {
             // Need to include the filter to ensure the table is joined
-            $list = $list->filter('Articles.ID:GreaterThan', 0)->where("\"FAQResults_Article\".\"Comment\" IS NOT NULL");
+            $list = $list->filter('Articles.ID:GreaterThan', 0)->where('"FAQResults_Article"."Comment" IS NOT NULL');
         }
 
         return $list;

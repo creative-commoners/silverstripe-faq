@@ -2,13 +2,9 @@
 
 namespace Silverstripe\FAQ\Extensions;
 
-
-
 use Silverstripe\FAQ\Model\FAQSearch;
 use SilverStripe\Security\Permission;
 use SilverStripe\Core\Extension;
-
-
 
 /**
  * Common fields and functionality for FAQ result sets and article views.

@@ -2,15 +2,11 @@
 
 namespace Silverstripe\FAQ\Model;
 
-
-
 use Silverstripe\FAQ\Model\FAQ;
 use Silverstripe\FAQ\Model\FAQResults;
 use SilverStripe\Comments\Model\Comment;
 use SilverStripe\Forms\ReadonlyField;
 use SilverStripe\ORM\DataObject;
-
-
 
 /**
  * Represents views of individual articles from a search result set.

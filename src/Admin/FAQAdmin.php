@@ -2,12 +2,9 @@
 
 namespace Silverstripe\FAQ\Admin;
 
-
 use Silverstripe\FAQ\Model\FAQ;
 use Silverstripe\FAQ\Admin\FAQCsvBulkLoader;
 use SilverStripe\Admin\ModelAdmin;
-
-
 
 /**
  * Model Admin for FAQs search module.

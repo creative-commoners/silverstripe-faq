@@ -2,19 +2,6 @@
 
 namespace Silverstripe\FAQ\Model;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 use Silverstripe\FAQ\Model\FAQResultsArticle;
 use SilverStripe\Comments\Model\Comment;
 use SilverStripe\Forms\ReadonlyField;
@@ -31,8 +18,6 @@ use SilverStripe\Forms\GridField\GridFieldFooter;
 use Silverstripe\FAQ\Form\FAQResultsArticleEditButton;
 use Silverstripe\FAQ\Form\FAQResultsArticleDetailForm;
 use SilverStripe\ORM\DataObject;
-
-
 
 /**
  * Represents a result set resulting from a search.
@@ -93,7 +78,7 @@ class FAQResults extends DataObject
         $articleIDs = json_decode($this->ArticleSet);
         $articles = FAQ::get()
             ->where('ID IN (' . implode(',', $articleIDs) . ')')
-            ->sort('FIELD(ID,' . implode(',', $articleIDs) .')');
+            ->sort('FIELD(ID,' . implode(',', $articleIDs) . ')');
 
         $fields->addFieldToTab('Root.Main', ReadonlyField::create('SetSize', 'Size of this results set'));
 

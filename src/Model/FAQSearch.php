@@ -2,21 +2,6 @@
 
 namespace Silverstripe\FAQ\Model;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 use Silverstripe\FAQ\Model\FAQResults;
 use Silverstripe\FAQ\Model\FAQResultsArticle;
 use SilverStripe\Forms\ReadonlyField;
@@ -35,7 +20,6 @@ use SilverStripe\Security\Permission;
 use Silverstripe\FAQ\Model\FAQ;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\Security\PermissionProvider;
-
 
 /**
  * Representing individual searches for the search log.

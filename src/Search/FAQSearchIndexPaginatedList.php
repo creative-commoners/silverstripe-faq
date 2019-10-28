@@ -2,13 +2,6 @@
 
 namespace Silverstripe\FAQ\Search;
 
-
-
-
-
-
-
-
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\Controller;
 use SilverStripe\Control\Director;
@@ -16,8 +9,6 @@ use SilverStripe\ORM\ArrayList;
 use SilverStripe\Control\HTTP;
 use SilverStripe\View\ArrayData;
 use SilverStripe\ORM\PaginatedList;
-
-
 
 /**
  * Subclass for added ability of injecting the URL to be used as the base for links. There is a lot of copy/paste
@@ -34,7 +25,9 @@ class FAQSearchIndexPaginatedList extends PaginatedList
      */
     public function setTrackingURL(HTTPRequest $request, $trackingID)
     {
-        $this->trackingURL = Director::makeRelative(Controller::join_links($request->getURL(true), '?t=' . $trackingID));
+        $this->trackingURL = Director::makeRelative(
+            Controller::join_links($request->getURL(true), '?t=' . $trackingID)
+        );
         return $this;
     }
 
@@ -68,7 +61,11 @@ class FAQSearchIndexPaginatedList extends PaginatedList
         for ($i = $start; $i < $end; $i++) {
             $result->push(new ArrayData(array(
                 'PageNum'     => $i + 1,
-                'Link'        => HTTP::setGetVar($this->getPaginationGetVar(), $i * $this->getPageLength(), $this->getTrackingURL()),
+                'Link'        => HTTP::setGetVar(
+                    $this->getPaginationGetVar(),
+                    $i * $this->getPageLength(),
+                    $this->getTrackingURL()
+                ),
                 'CurrentBool' => $this->CurrentPage() == ($i + 1)
             )));
         }
@@ -103,7 +100,11 @@ class FAQSearchIndexPaginatedList extends PaginatedList
         }
 
         for ($i = 0; $i < $total; $i++) {
-            $link    = HTTP::setGetVar($this->getPaginationGetVar(), $i * $this->getPageLength(), $this->getTrackingURL());
+            $link    = HTTP::setGetVar(
+                $this->getPaginationGetVar(),
+                $i * $this->getPageLength(),
+                $this->getTrackingURL()
+            );
             $num     = $i + 1;
 
             $emptyRange = $num != 1 && $num != $total && (

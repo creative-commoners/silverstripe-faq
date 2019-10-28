@@ -2,18 +2,12 @@
 
 namespace Silverstripe\FAQ\Search;
 
-
-
-
-
-
 use Silverstripe\FAQ\Model\FAQ;
 use SilverStripe\FullTextSearch\Search\Queries\SearchQuery;
 use SilverStripe\Core\Config\Config;
 use Silverstripe\FAQ\Search\FAQSearchIndex;
 use SilverStripe\FullTextSearch\Solr\Solr;
 use SilverStripe\FullTextSearch\Solr\SolrIndex;
-
 
 /**
  * Custom solr search index. Extends {@see CwpSearchIndex}
@@ -163,11 +157,11 @@ class FAQSearchIndex extends SolrIndex
                     $searchq = array();
                     foreach ($fields as $field) {
                         $boost = (isset($search['boost'][$field])) ? '^' . $search['boost'][$field] : '';
-                        $searchq[] = "{$field}:".$part.$fuzzy.$boost;
+                        $searchq[] = "{$field}:" . $part . $fuzzy . $boost;
                     }
-                    $q[] = '+('.implode(' OR ', $searchq).')';
+                    $q[] = '+(' . implode(' OR ', $searchq) . ')';
                 } else {
-                    $q[] = $part.$fuzzy;
+                    $q[] = $part . $fuzzy;
                 }
                 $hlq[] = $part;
             }
@@ -187,7 +181,8 @@ class FAQSearchIndex extends SolrIndex
         $this->extend('updateConfig', $store);
     }
 
-    public function getFieldDefinitions() {
+    public function getFieldDefinitions()
+    {
         $xml = parent::getFieldDefinitions();
 
         $this->extend('updateFieldDefinitions', $xml);
@@ -195,4 +190,3 @@ class FAQSearchIndex extends SolrIndex
         return $xml;
     }
 }
-

@@ -2,22 +2,6 @@
 
 namespace Silverstripe\FAQ\Model;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 use SilverStripe\Taxonomy\TaxonomyTerm;
 use Silverstripe\FAQ\Model\FAQResultsArticle;
 use SilverStripe\Forms\DropdownField;
@@ -36,7 +20,6 @@ use Silverstripe\FAQ\Extensions\FAQTaxonomyTermExtension;
 use SilverStripe\Security\Permission;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\Security\PermissionProvider;
-
 
 /**
  * DataObject for a single FAQ related to the FAQ search module.
@@ -162,7 +145,8 @@ class FAQ extends DataObject implements PermissionProvider
             )
         );
 
-        $fields->addFieldToTab('Root.Views',
+        $fields->addFieldToTab(
+            'Root.Views',
             GridField::create(
                 'Views',
                 'Views',
@@ -216,7 +200,8 @@ class FAQ extends DataObject implements PermissionProvider
         return $link;
     }
 
-    public function getTitle() {
+    public function getTitle()
+    {
         if ($this->Question) {
             return $this->Question;
         }
@@ -248,8 +233,8 @@ class FAQ extends DataObject implements PermissionProvider
         Deprecation::notice('2.0', 'getAllCategories is deprecated. Create extended function');
         $taxName = Config::inst()->get(FAQ::class, 'taxonomy_name');
         $root = FAQTaxonomyTermExtension::getOrCreate(
-            array('Name'=> $taxName),
-            array('Name'=> $taxName, 'ParentID'=> 0)
+            array('Name' => $taxName),
+            array('Name' => $taxName, 'ParentID' => 0)
         );
         return $root->Children();
     }

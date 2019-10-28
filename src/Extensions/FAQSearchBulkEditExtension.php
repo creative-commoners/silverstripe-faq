@@ -2,13 +2,9 @@
 
 namespace Silverstripe\FAQ\Extensions;
 
-
-
 use Silverstripe\FAQ\Model\FAQSearch;
 use Colymba\BulkManager\BulkManager;
 use SilverStripe\ORM\DataExtension;
-
-
 
 /**
  * Adds Archiving and Deleting for bulk actions, makes it much easier to archive or delete a long list of FAQ Search
@@ -16,7 +12,8 @@ use SilverStripe\ORM\DataExtension;
  */
 class FAQSearchBulkEditExtension extends DataExtension
 {
-    public function updateEditForm(&$form) {
+    public function updateEditForm(&$form)
+    {
         $fields = $form->Fields();
         $table = $fields->dataFieldByName(FAQSearch::class);
 

@@ -3,16 +3,7 @@
 namespace Silverstripe\FAQ\PageTypes;
 
 use Page;
-
-
-
-
-
-
 use GridFieldSortableRows;
-
-
-
 use Silverstripe\FAQ\Model\FAQ;
 use SilverStripe\Taxonomy\TaxonomyTerm;
 use SilverStripe\Forms\TreeMultiselectField;
@@ -28,7 +19,6 @@ use SilverStripe\Forms\GridField\GridFieldAddExistingAutocompleter;
 use SilverStripe\Forms\LiteralField;
 use SilverStripe\Forms\GridField\GridField;
 use SilverStripe\ORM\ArrayList;
-
 
 /**
  * FAQ pagetype, displays Q & A related to the page.
@@ -56,7 +46,8 @@ class FAQPage extends Page
         'SearchResultsSummary' => 'Displaying %CurrentPage% of %TotalPages% pages for "%Query%"',
         'SearchResultsTitle' => 'FAQ Results',
         'SearchButtonText' => 'Search',
-        'NoResultsMessage' => 'We couldn\'t find an answer to your question. Maybe try asking it in a different way, or check your spelling.',
+        'NoResultsMessage' => 'We couldn\'t find an answer to your question. Maybe try asking it in a different way, '
+            . 'or check your spelling.',
         'SearchNotAvailable' => 'We are currently unable to search the website for you. Please try again later.',
         'MoreLinkText' => 'Read more'
     );
@@ -161,7 +152,12 @@ class FAQPage extends Page
         // warning for categories filtering on featured FAQs
         $differentCategories = 0;
         if ($this->Categories()->count() > 0) {
-            $FAQsWithCategories = $this->FeaturedFAQs()->filter('CategoryID', $this->Categories()->column('ID'))->count();
+            $FAQsWithCategories = $this->FeaturedFAQs()
+                ->filter(
+                    'CategoryID',
+                    $this->Categories()->column('ID')
+                )
+                ->count();
             $totalFeaturedFAQs = $this->FeaturedFAQs()->count();
             $differentCategories = $totalFeaturedFAQs - $FAQsWithCategories;
         }

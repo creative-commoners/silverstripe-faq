@@ -2,15 +2,10 @@
 
 namespace Silverstripe\FAQ\Form;
 
-
-
-
-
 use Colymba\BulkManager\BulkAction\Handler;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Core\Convert;
 use SilverStripe\Control\HTTPResponse;
-
 
 // do not want to load this handler if it cannot extend
 if (!class_exists(Handler::class)) {
@@ -51,8 +46,7 @@ class GridFieldBulkActionArchiveHandler extends Handler
     {
         $ids = array();
 
-        foreach ( $this->getRecords() as $record )
-        {
+        foreach ($this->getRecords() as $record) {
             array_push($ids, $record->ID);
             $record->Archived = true;
             $record->write();

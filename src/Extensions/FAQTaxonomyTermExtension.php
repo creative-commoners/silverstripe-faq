@@ -2,11 +2,8 @@
 
 namespace Silverstripe\FAQ\Extensions;
 
-
-
 use SilverStripe\Taxonomy\TaxonomyTerm;
 use SilverStripe\ORM\DataExtension;
-
 
 /**
  * Extends {@link TaxonomyTerm} with useful functionality

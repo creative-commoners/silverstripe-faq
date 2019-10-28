@@ -2,14 +2,9 @@
 
 namespace Silverstripe\FAQ\Form;
 
-
-
-
 use SilverStripe\Control\PjaxResponseNegotiator;
 use SilverStripe\ORM\ValidationException;
 use SilverStripe\Forms\GridField\GridFieldDetailForm_ItemRequest;
-
-
 
 /**
  * Saving FAQ records from FAQResults_Article_DetailForm.
@@ -22,7 +17,7 @@ class FAQResultsArticleDetailFormItemRequest extends GridFieldDetailForm_ItemReq
         $controller = $this->getToplevelController();
         $list = $this->gridField->getList();
 
-        if(!$this->record->canEdit()) {
+        if (!$this->record->canEdit()) {
             return $controller->httpError(403);
         }
 
@@ -39,18 +34,17 @@ class FAQResultsArticleDetailFormItemRequest extends GridFieldDetailForm_ItemReq
         try {
             $form->saveInto($this->record);
             $this->record->write();
-
-        } catch(ValidationException $e) {
+        } catch (ValidationException $e) {
             $form->sessionMessage($e->getResult()->message(), 'bad', false);
             $responseNegotiator = new PjaxResponseNegotiator(array(
-                'CurrentForm' => function() use(&$form) {
+                'CurrentForm' => function () use (&$form) {
                     return $form->forTemplate();
                 },
-                'default' => function() use(&$controller) {
+                'default' => function () use (&$controller) {
                     return $controller->redirectBack();
                 }
             ));
-            if($controller->getRequest()->isAjax()){
+            if ($controller->getRequest()->isAjax()) {
                 $controller->getRequest()->addHeader('X-Pjax', 'CurrentForm');
             }
             return $responseNegotiator->respond($controller->getRequest());
@@ -70,7 +64,7 @@ class FAQResultsArticleDetailFormItemRequest extends GridFieldDetailForm_ItemReq
 
         $form->sessionMessage($message, 'good', false);
 
-        if($new_record) {
+        if ($new_record) {
             return $controller->redirect($this->Link());
         } else {
             return $this->edit($controller->getRequest());

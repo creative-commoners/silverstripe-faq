@@ -2,16 +2,10 @@
 
 namespace Silverstripe\FAQ\Form;
 
-
-
-
-
 use Silverstripe\FAQ\Model\FAQ;
 use SilverStripe\Control\Controller;
 use SilverStripe\View\ArrayData;
 use SilverStripe\Forms\GridField\GridFieldEditButton;
-
-
 
 /**
  * Gridfield edit button to open FAQ when gridfield list consists of FAQResults_Article items.

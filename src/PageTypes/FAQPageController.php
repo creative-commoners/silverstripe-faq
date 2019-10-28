@@ -2,33 +2,8 @@
 
 namespace Silverstripe\FAQ\PageTypes;
 
-
-
-
-
-
-
-
-
-
-
-
-
 use Exception;
 use SS_Log;
-
-
-
-
-
-
-
-
-
-
-
-
-
 use Silverstripe\FAQ\Search\FAQSearchIndex;
 use Silverstripe\FAQ\Model\FAQ;
 use SilverStripe\View\Requirements;
@@ -57,8 +32,6 @@ use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\FormAction;
 use SilverStripe\Forms\Form;
 use PageController;
-
-
 
 class FAQPageController extends PageController
 {
@@ -103,7 +76,7 @@ class FAQPageController extends PageController
     public function init()
     {
         parent::init();
-        Requirements::javascript(FAQ_DIR .'/javascript/faq.js');
+        Requirements::javascript('silverstripe/faq:javascript/faq.js');
     }
 
     /**
@@ -234,7 +207,6 @@ class FAQPageController extends PageController
             // Log the search query and result set for the query, link them to a session (ensure session is started)
             $sessID = session_id();
             if ($sessID && Permission::check('FAQ_IGNORE_SEARCH_LOGS') == false) {
-
                 $trackingSearchID = $this->findTrackingID($this->request);
 
                 // If the tracking ID is set then use existing search log if the log is for the same session
@@ -245,7 +217,6 @@ class FAQPageController extends PageController
                     ))->first();
                     $searchLogID = ($searchLog && $searchLog->exists()) ? $searchLog->ID : null;
                 } else {
-
                     $searchLog = FAQSearch::create(array(
                         'SessionID' => $sessID,
                         'Term' => $keywords,
@@ -303,7 +274,6 @@ class FAQPageController extends PageController
                 $suggestionData,
                 $keywords
             );
-
         } catch (Exception $e) {
             $renderData = array('SearchError' => true);
             SS_Log::log($e, SS_Log::WARN);
@@ -333,7 +303,8 @@ class FAQPageController extends PageController
      * @param  SS_HTTPRequest $request Current request
      * @return int                     The search log ID for the current search
      */
-    public function findTrackingID(HTTPRequest $request) {
+    public function findTrackingID(HTTPRequest $request)
+    {
 
         // Use the GET param first
         $trackingIDs = $this->getTrackingIDs($request->getVar('t'));
@@ -407,7 +378,7 @@ class FAQPageController extends PageController
         );
 
         // add optional dictionary
-        if($searchParams = Config::inst()->get(FAQSearchIndex::class, 'search_params')) {
+        if ($searchParams = Config::inst()->get(FAQSearchIndex::class, 'search_params')) {
             $params = array_merge($params, $searchParams);
             //$params["spellcheck.dictionary"] = $dictionary;
         }
@@ -568,7 +539,7 @@ class FAQPageController extends PageController
                 $formattedCategoryArray = array(
                     'Name' => $namePrefix,
                     'ID' => $category->ID,
-                    'Selected' => (String)$categoryFilterID === (String)$category->ID
+                    'Selected' => (string)$categoryFilterID === (string)$category->ID
                 );
 
                 $categoriesAccumulator->push(new ArrayData($formattedCategoryArray));
@@ -653,7 +624,8 @@ class FAQPageController extends PageController
      *
      * @return Form The rating form
      */
-    public function RatingForm() {
+    public function RatingForm()
+    {
 
         // Only show the rating form for users whose tracking ID matches session
         $fields = FieldList::create(
@@ -688,7 +660,8 @@ class FAQPageController extends PageController
      * @param  SS_HTTPRequest $request Request
      * @return HTTPResponse            Redirects back
      */
-    public function rate(Array $data, Form $form, HTTPRequest $request) {
+    public function rate(array $data, Form $form, HTTPRequest $request)
+    {
 
         // If the session and matches for the article log, then add rating/comment
         $updated = false;

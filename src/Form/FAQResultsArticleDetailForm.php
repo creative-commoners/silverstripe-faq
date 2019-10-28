@@ -2,13 +2,9 @@
 
 namespace Silverstripe\FAQ\Form;
 
-
-
 use DataModel;
 use Silverstripe\FAQ\Model\FAQ;
 use SilverStripe\Forms\GridField\GridFieldDetailForm;
-
-
 
 /**
  * Gridfield detail form for handing FAQ items when linked to from a list of FAQResults_Article items.
@@ -31,7 +27,14 @@ class FAQResultsArticleDetailForm extends GridFieldDetailForm
 
         // if no validator has been set on the GridField and the record has a
         // CMS validator, use that.
-        if(!$this->getValidator() && (method_exists($record, 'getCMSValidator') || $record instanceof Object && $record->hasMethod('getCMSValidator'))) {
+        if (
+            !$this->getValidator()
+            && (
+                method_exists($record, 'getCMSValidator')
+                || $record instanceof Object
+                && $record->hasMethod('getCMSValidator')
+            )
+        ) {
             $this->setValidator($record->getCMSValidator());
         }
 
