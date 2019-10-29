@@ -49,10 +49,18 @@ class FAQPageController extends PageController
     /**
      * This is the string used for the url search term variable.
      * E.g. "searchterm" in "http://mysite/faq?searchterm=this+is+a+search"
+     *
+     * this is not a Silversripe configuration
+     *
      * @var string
      */
-    private static $search_term_key = 'q';
-    private static $search_category_key = 'c';
+    public static $search_term_key = 'q';
+    /**
+     * this is not a Silversripe configuration
+     *
+     * @var string
+     */
+    public static $search_category_key = 'c';
 
     /**
      * We replace these keys with real data in the SearchResultsSummary before adding to the template.
