@@ -13,6 +13,8 @@ use SilverStripe\ORM\DataObject;
  */
 class FAQResultsArticle extends DataObject
 {
+    private static $table_name = "FAQResultsArticle";
+
     private static $singular_name = 'Article';
 
     private static $default_sort = 'Created DESC';

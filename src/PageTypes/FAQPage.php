@@ -27,6 +27,8 @@ use SilverStripe\ORM\ArrayList;
  */
 class FAQPage extends Page
 {
+    private static $table_name = "FAQPage";
+
     private static $db = array(
         'SinglePageLimit' => 'Int',
         'CategoriesSelectAllText' => 'Varchar(124)',

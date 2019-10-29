@@ -26,6 +26,8 @@ use SilverStripe\Security\PermissionProvider;
  */
 class FAQSearch extends DataObject implements PermissionProvider
 {
+    private static $table_name = "FAQSearch";
+
     private static $singular_name = 'Search';
 
     private static $db = array(

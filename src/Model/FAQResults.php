@@ -24,6 +24,8 @@ use SilverStripe\ORM\DataObject;
  */
 class FAQResults extends DataObject
 {
+    private static $table_name = "FAQResults";
+
     private static $singular_name = 'Result Set';
 
     private static $db = array(
