@@ -55,7 +55,7 @@ class FAQSearchIndex extends SolrIndex
 
         // Replace the paginated list of results so that we can add tracking code to the URL of pagination links
         $matches = $result->getField('Matches');
-        $trackedMatches = new FAQSearchIndex_PaginatedList($matches->getList());
+        $trackedMatches = new FAQSearchIndexPaginatedList($matches->getList());
         $trackedMatches->setLimitItems($matches->getLimitItems());
         $trackedMatches->setTotalItems($matches->getTotalItems());
         $trackedMatches->setPageStart($matches->getPageStart());

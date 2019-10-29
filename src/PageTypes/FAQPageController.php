@@ -3,12 +3,11 @@
 namespace Silverstripe\FAQ\PageTypes;
 
 use Exception;
-use SS_Log;
+use Psr\Log\LoggerInterface;
+use SilverStripe\Core\Injector\Injector;
 use Silverstripe\FAQ\Search\FAQSearchIndex;
 use Silverstripe\FAQ\Model\FAQ;
 use SilverStripe\View\Requirements;
-use Silverstripe\FAQ\PageTypes\FAQPage;
-use SilverStripe\Control\Session;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Security\Permission;
 use Silverstripe\FAQ\Model\FAQResultsArticle;
@@ -84,10 +83,11 @@ class FAQPageController extends PageController
      */
     public function startSession()
     {
-        if (!Session::get(FAQPage::class)) {
+        $session = $this->getRequest()->getSession();
+        if (!$session->get(FAQPage::class)) {
             // Ensure that session is started for tracking behaviour, essential for linking behaviour to a user
-            Session::set(FAQPage::class, true);
-            Session::save();
+            $session->set(FAQPage::class, true);
+            $session->save($this->getRequest());
         }
     }
 
@@ -185,7 +185,7 @@ class FAQPageController extends PageController
         // limit if required by cms config
         $limit = $this->config()->results_per_page;
         if ($this->SinglePageLimit != '0') {
-            $setlimit = intval($this->SinglePageLimit);
+            $setlimit = (int)$this->SinglePageLimit;
             if ($setlimit != 0 && is_int($setlimit)) {
                 $limit = $setlimit;
             }
@@ -241,10 +241,13 @@ class FAQPageController extends PageController
                 // A valid search log ID exists for this session, a new results set log
                 // is created, results logs are not re-used, each page of results viewed is a new log entry
                 if ($searchLogID) {
+                    $resultMap = $results->map();
+                    /** @var \SilverStripe\ORM\Map $resultMap */
+
                     $resultsLogID = FAQResults::create(array(
                         'SearchID' => $searchLogID,
-                        'ArticleSet' => json_encode(array_keys($results->map())),
-                        'SetSize' => count($results->map()),
+                        'ArticleSet' => json_encode(array_keys($resultMap->toArray())),
+                        'SetSize' => $resultMap->count(),
                         'SessionID' => $sessID,
                     ))->write();
                 }
@@ -274,9 +277,19 @@ class FAQPageController extends PageController
                 $suggestionData,
                 $keywords
             );
-        } catch (Exception $e) {
+        } catch (Exception $exception) {
             $renderData = array('SearchError' => true);
-            SS_Log::log($e, SS_Log::WARN);
+            $logger = Injector::inst()->get(LoggerInterface::class);
+            /** @var LoggerInterface $logger */
+            $logger->warning(
+                sprintf(
+                    '%s:%d Search Error: %s',
+                    static::class,
+                    __LINE__,
+                    $exception->getMessage()
+                ),
+                [$exception]
+            );
         }
 
         return $renderData;
@@ -351,13 +364,13 @@ class FAQPageController extends PageController
         $query = new SearchQuery();
         $query->classes = self::$classes_to_search;
         if (count($categoryIDs) > 0) {
-            $query->filter('FAQ_Category_ID', array_filter($categoryIDs, 'intval'));
+            $query->addFilter('FAQ_Category_ID', array_filter($categoryIDs, 'intval'));
         }
-        $query->search($keywords);
+        $query->addSearchTerm($keywords);
 
         // Artificially lower the amount of results to prevent too high resource usage.
         // on subsequent canView check loop.
-        $query->limit(100);
+        $query->setLimit(100);
 
         return $query;
     }
@@ -444,7 +457,7 @@ class FAQPageController extends PageController
 
         // remove pagination if required by cms config
         if ($this->SinglePageLimit != '0') {
-            $setlimit = intval($this->SinglePageLimit);
+            $setlimit = (int)$this->SinglePageLimit;
             $renderData['SearchResults']->setTotalItems($setlimit);
         }
 
