@@ -23,7 +23,7 @@ class FAQAdmin extends ModelAdmin
     private static $menu_title = 'FAQs';
 
     private static $model_importers = array(
-        'FAQ' => FAQCsvBulkLoader::class
+        FAQ::class => FAQCsvBulkLoader::class
     );
 
     /**
