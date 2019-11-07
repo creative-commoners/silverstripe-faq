@@ -477,7 +477,7 @@ class FAQPageController extends PageController
      */
     protected function renderSearch($renderData)
     {
-        $templates = array('FAQPage_results', 'Page');
+        $templates = array(FAQPage::class . '_results', 'Page');
         if ($this->request->getVar('format') == 'rss') {
             array_unshift($templates, 'Page_results_rss');
         }
