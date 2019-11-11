@@ -3,7 +3,6 @@
 namespace Silverstripe\FAQ\PageTypes;
 
 use Page;
-use GridFieldSortableRows;
 use Silverstripe\FAQ\Model\FAQ;
 use SilverStripe\Taxonomy\TaxonomyTerm;
 use SilverStripe\Forms\TreeMultiselectField;
@@ -19,6 +18,7 @@ use SilverStripe\Forms\GridField\GridFieldAddExistingAutocompleter;
 use SilverStripe\Forms\LiteralField;
 use SilverStripe\Forms\GridField\GridField;
 use SilverStripe\ORM\ArrayList;
+use UndefinedOffset\SortableGridField\Forms\GridFieldSortableRows;
 
 /**
  * FAQ pagetype, displays Q & A related to the page.
