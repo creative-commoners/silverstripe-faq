@@ -1,21 +1,21 @@
 <?php
 
-namespace Silverstripe\FAQ\PageTypes;
+namespace SilverStripe\FAQ\PageTypes;
 
 use Exception;
 use Psr\Log\LoggerInterface;
 use SilverStripe\Core\Injector\Injector;
-use Silverstripe\FAQ\Search\FAQSearchIndex;
-use Silverstripe\FAQ\Model\FAQ;
+use SilverStripe\FAQ\Search\FAQSearchIndex;
+use SilverStripe\FAQ\Model\FAQ;
 use SilverStripe\View\Requirements;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Security\Permission;
-use Silverstripe\FAQ\Model\FAQResultsArticle;
-use Silverstripe\FAQ\Model\FAQSearch;
+use SilverStripe\FAQ\Model\FAQResultsArticle;
+use SilverStripe\FAQ\Model\FAQSearch;
 use SilverStripe\ORM\ArrayList;
 use SilverStripe\Control\Controller;
 use SilverStripe\CMS\Controllers\ContentController;
-use Silverstripe\FAQ\Model\FAQResults;
+use SilverStripe\FAQ\Model\FAQResults;
 use SilverStripe\FullTextSearch\Search\Queries\SearchQuery;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Control\Director;

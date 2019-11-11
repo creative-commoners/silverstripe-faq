@@ -1,13 +1,13 @@
 <?php
 
-namespace Silverstripe\FAQ\Tests;
+namespace SilverStripe\FAQ\Tests;
 
 
 use SilverStripe\Security\Member;
-use Silverstripe\FAQ\Model\FAQ;
-use Silverstripe\FAQ\Model\FAQSearch;
-use Silverstripe\FAQ\Model\FAQResults;
-use Silverstripe\FAQ\Model\FAQResultsArticle;
+use SilverStripe\FAQ\Model\FAQ;
+use SilverStripe\FAQ\Model\FAQSearch;
+use SilverStripe\FAQ\Model\FAQResults;
+use SilverStripe\FAQ\Model\FAQResultsArticle;
 use SilverStripe\Dev\FunctionalTest;
 
 

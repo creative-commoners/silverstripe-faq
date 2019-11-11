@@ -1,6 +1,6 @@
 <?php
 
-namespace Silverstripe\FAQ\Extensions;
+namespace SilverStripe\FAQ\Extensions;
 
 use SilverStripe\Taxonomy\TaxonomyTerm;
 use SilverStripe\ORM\DataExtension;

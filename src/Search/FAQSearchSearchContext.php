@@ -1,6 +1,6 @@
 <?php
 
-namespace Silverstripe\FAQ\Search;
+namespace SilverStripe\FAQ\Search;
 
 use SilverStripe\Forms\DateField;
 use SilverStripe\ORM\Filters\LessThanFilter;

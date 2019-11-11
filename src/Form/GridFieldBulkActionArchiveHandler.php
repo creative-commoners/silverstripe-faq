@@ -1,6 +1,6 @@
 <?php
 
-namespace Silverstripe\FAQ\Form;
+namespace SilverStripe\FAQ\Form;
 
 use Colymba\BulkManager\BulkAction\Handler;
 use SilverStripe\Control\HTTPRequest;

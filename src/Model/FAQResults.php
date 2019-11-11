@@ -1,13 +1,13 @@
 <?php
 
-namespace Silverstripe\FAQ\Model;
+namespace SilverStripe\FAQ\Model;
 
-use Silverstripe\FAQ\Model\FAQResultsArticle;
+use SilverStripe\FAQ\Model\FAQResultsArticle;
 use SilverStripe\Comments\Model\Comment;
 use SilverStripe\Forms\ReadonlyField;
 use SilverStripe\Forms\GridField\GridFieldSortableHeader;
 use SilverStripe\Forms\GridField\GridFieldDataColumns;
-use Silverstripe\FAQ\Model\FAQ;
+use SilverStripe\FAQ\Model\FAQ;
 use SilverStripe\Forms\GridField\GridFieldConfig;
 use SilverStripe\Forms\GridField\GridField;
 use SilverStripe\Forms\GridField\GridFieldButtonRow;
@@ -15,8 +15,8 @@ use SilverStripe\Forms\GridField\GridFieldToolbarHeader;
 use SilverStripe\Forms\GridField\GridFieldEditButton;
 use SilverStripe\Forms\GridField\GridFieldDetailForm;
 use SilverStripe\Forms\GridField\GridFieldFooter;
-use Silverstripe\FAQ\Form\FAQResultsArticleEditButton;
-use Silverstripe\FAQ\Form\FAQResultsArticleDetailForm;
+use SilverStripe\FAQ\Form\FAQResultsArticleEditButton;
+use SilverStripe\FAQ\Form\FAQResultsArticleDetailForm;
 use SilverStripe\ORM\DataObject;
 
 /**

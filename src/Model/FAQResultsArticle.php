@@ -1,9 +1,9 @@
 <?php
 
-namespace Silverstripe\FAQ\Model;
+namespace SilverStripe\FAQ\Model;
 
-use Silverstripe\FAQ\Model\FAQ;
-use Silverstripe\FAQ\Model\FAQResults;
+use SilverStripe\FAQ\Model\FAQ;
+use SilverStripe\FAQ\Model\FAQResults;
 use SilverStripe\Comments\Model\Comment;
 use SilverStripe\Forms\ReadonlyField;
 use SilverStripe\ORM\DataObject;

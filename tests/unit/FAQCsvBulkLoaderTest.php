@@ -1,9 +1,9 @@
 <?php
 
-namespace Silverstripe\FAQ\Tests;
+namespace SilverStripe\FAQ\Tests;
 
 
-use Silverstripe\FAQ\Model\FAQ;
+use SilverStripe\FAQ\Model\FAQ;
 use SilverStripe\Dev\SapphireTest;
 
 

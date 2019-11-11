@@ -1,8 +1,8 @@
 <?php
 
-namespace Silverstripe\FAQ\Search;
+namespace SilverStripe\FAQ\Search;
 
-use Silverstripe\FAQ\Model\FAQ;
+use SilverStripe\FAQ\Model\FAQ;
 use SilverStripe\FullTextSearch\Search\Queries\SearchQuery;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\FullTextSearch\Solr\Solr;

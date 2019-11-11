@@ -1,9 +1,9 @@
 <?php
 
-namespace Silverstripe\FAQ\Admin;
+namespace SilverStripe\FAQ\Admin;
 
 use SilverStripe\Core\Convert;
-use Silverstripe\FAQ\Model\FAQ;
+use SilverStripe\FAQ\Model\FAQ;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Taxonomy\TaxonomyTerm;
 use SilverStripe\Dev\CsvBulkLoader;

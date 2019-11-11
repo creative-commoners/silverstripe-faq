@@ -1,6 +1,6 @@
 <?php
 
-namespace Silverstripe\FAQ\Form;
+namespace SilverStripe\FAQ\Form;
 
 use SilverStripe\Control\PjaxResponseNegotiator;
 use SilverStripe\ORM\ValidationException;

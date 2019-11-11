@@ -1,6 +1,6 @@
 <?php
 
-namespace Silverstripe\FAQ\Tests;
+namespace SilverStripe\FAQ\Tests;
 
 
 
@@ -16,19 +16,19 @@ use Phockito;
 
 
 use SilverStripe\Security\Member;
-use Silverstripe\FAQ\PageTypes\FAQPage;
+use SilverStripe\FAQ\PageTypes\FAQPage;
 use SilverStripe\Control\Session;
 use SilverStripe\Control\Director;
-use Silverstripe\FAQ\PageTypes\FAQPageController;
-use Silverstripe\FAQ\Model\FAQ;
+use SilverStripe\FAQ\PageTypes\FAQPageController;
+use SilverStripe\FAQ\Model\FAQ;
 use SilverStripe\ORM\ArrayList;
-use Silverstripe\FAQ\Search\FAQSearchIndexPaginatedList;
+use SilverStripe\FAQ\Search\FAQSearchIndexPaginatedList;
 use SilverStripe\FullTextSearch\Search\Queries\SearchQuery;
 use SilverStripe\View\ArrayData;
-use Silverstripe\FAQ\Model\FAQSearch;
-use Silverstripe\FAQ\Model\FAQResults;
+use SilverStripe\FAQ\Model\FAQSearch;
+use SilverStripe\FAQ\Model\FAQResults;
 use SilverStripe\Control\HTTPRequest;
-use Silverstripe\FAQ\Model\FAQResultsArticle;
+use SilverStripe\FAQ\Model\FAQResultsArticle;
 use SilverStripe\Forms\Form;
 use SilverStripe\Comments\Model\Comment;
 use SilverStripe\Dev\FunctionalTest;

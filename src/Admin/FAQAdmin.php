@@ -1,9 +1,9 @@
 <?php
 
-namespace Silverstripe\FAQ\Admin;
+namespace SilverStripe\FAQ\Admin;
 
-use Silverstripe\FAQ\Model\FAQ;
-use Silverstripe\FAQ\Admin\FAQCsvBulkLoader;
+use SilverStripe\FAQ\Model\FAQ;
+use SilverStripe\FAQ\Admin\FAQCsvBulkLoader;
 use SilverStripe\Admin\ModelAdmin;
 
 /**

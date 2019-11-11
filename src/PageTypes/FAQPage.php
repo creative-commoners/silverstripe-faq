@@ -1,9 +1,9 @@
 <?php
 
-namespace Silverstripe\FAQ\PageTypes;
+namespace SilverStripe\FAQ\PageTypes;
 
 use Page;
-use Silverstripe\FAQ\Model\FAQ;
+use SilverStripe\FAQ\Model\FAQ;
 use SilverStripe\Taxonomy\TaxonomyTerm;
 use SilverStripe\Forms\TreeMultiselectField;
 use SilverStripe\Forms\Tab;

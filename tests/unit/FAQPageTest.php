@@ -1,6 +1,6 @@
 <?php
 
-namespace Silverstripe\FAQ\Tests;
+namespace SilverStripe\FAQ\Tests;
 
 
 
@@ -14,9 +14,9 @@ use Phockito;
 
 use Exception;
 use SilverStripe\Taxonomy\TaxonomyTerm;
-use Silverstripe\FAQ\PageTypes\FAQPage;
-use Silverstripe\FAQ\Model\FAQ;
-use Silverstripe\FAQ\PageTypes\FAQPageController;
+use SilverStripe\FAQ\PageTypes\FAQPage;
+use SilverStripe\FAQ\Model\FAQ;
+use SilverStripe\FAQ\PageTypes\FAQPageController;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\ORM\ArrayList;
 use SilverStripe\ORM\PaginatedList;

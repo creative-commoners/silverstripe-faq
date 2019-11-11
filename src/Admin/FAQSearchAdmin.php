@@ -1,8 +1,8 @@
 <?php
 
-namespace Silverstripe\FAQ\Admin;
+namespace SilverStripe\FAQ\Admin;
 
-use Silverstripe\FAQ\Model\FAQSearch;
+use SilverStripe\FAQ\Model\FAQSearch;
 use SilverStripe\Admin\ModelAdmin;
 
 /**

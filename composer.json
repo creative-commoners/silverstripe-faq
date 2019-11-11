@@ -28,8 +28,8 @@
     },
     "autoload": {
         "psr-4": {
-            "Silverstripe\\FAQ\\": "src",
-            "Silverstripe\\FAQ\\Tests\\": "tests/unit"
+            "SilverStripe\\FAQ\\": "src",
+            "SilverStripe\\FAQ\\Tests\\": "tests/unit"
         }
     },
     "suggest": {

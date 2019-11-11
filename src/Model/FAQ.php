@@ -1,9 +1,9 @@
 <?php
 
-namespace Silverstripe\FAQ\Model;
+namespace SilverStripe\FAQ\Model;
 
 use SilverStripe\Taxonomy\TaxonomyTerm;
-use Silverstripe\FAQ\Model\FAQResultsArticle;
+use SilverStripe\FAQ\Model\FAQResultsArticle;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\ORM\Filters\ExactMatchFilter;
 use SilverStripe\ORM\Search\SearchContext;
@@ -12,11 +12,11 @@ use SilverStripe\Forms\ReadonlyField;
 use SilverStripe\Forms\GridField\GridFieldConfig_RecordViewer;
 use SilverStripe\Forms\GridField\GridField;
 use SilverStripe\Forms\RequiredFields;
-use Silverstripe\FAQ\PageTypes\FAQPage;
+use SilverStripe\FAQ\PageTypes\FAQPage;
 use SilverStripe\Control\Controller;
 use SilverStripe\Dev\Deprecation;
 use SilverStripe\Core\Config\Config;
-use Silverstripe\FAQ\Extensions\FAQTaxonomyTermExtension;
+use SilverStripe\FAQ\Extensions\FAQTaxonomyTermExtension;
 use SilverStripe\Security\Permission;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\Security\PermissionProvider;

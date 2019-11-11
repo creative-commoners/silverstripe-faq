@@ -1,8 +1,8 @@
 <?php
 
-namespace Silverstripe\FAQ\Form;
+namespace SilverStripe\FAQ\Form;
 
-use Silverstripe\FAQ\Model\FAQ;
+use SilverStripe\FAQ\Model\FAQ;
 use SilverStripe\Control\Controller;
 use SilverStripe\View\ArrayData;
 use SilverStripe\Forms\GridField\GridFieldEditButton;

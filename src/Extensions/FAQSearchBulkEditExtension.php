@@ -1,8 +1,8 @@
 <?php
 
-namespace Silverstripe\FAQ\Extensions;
+namespace SilverStripe\FAQ\Extensions;
 
-use Silverstripe\FAQ\Model\FAQSearch;
+use SilverStripe\FAQ\Model\FAQSearch;
 use Colymba\BulkManager\BulkManager;
 use SilverStripe\ORM\DataExtension;
 

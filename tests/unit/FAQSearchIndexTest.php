@@ -1,10 +1,10 @@
 <?php
 
-namespace Silverstripe\FAQ\Tests;
+namespace SilverStripe\FAQ\Tests;
 
 
 
-use Silverstripe\FAQ\Search\FAQSearchIndex;
+use SilverStripe\FAQ\Search\FAQSearchIndex;
 use SilverStripe\Dev\SapphireTest;
 
 

@@ -1,9 +1,9 @@
 <?php
 
-namespace Silverstripe\FAQ\Form;
+namespace SilverStripe\FAQ\Form;
 
 use DataModel;
-use Silverstripe\FAQ\Model\FAQ;
+use SilverStripe\FAQ\Model\FAQ;
 use SilverStripe\Forms\GridField\GridFieldDetailForm;
 
 /**

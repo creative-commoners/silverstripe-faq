@@ -3,8 +3,8 @@ Name: faqlegacy
 ---
 SilverStripe\ORM\DatabaseAdmin:
   classname_value_remapping:
-    FAQResults_Article: Silverstripe\FAQ\Model\FAQResultsArticle
-    FAQ: Silverstripe\FAQ\Model\FAQ
-    FAQSearch: Silverstripe\FAQ\Model\FAQSearch
-    FAQResults: Silverstripe\FAQ\Model\FAQResults
-    FAQPage: Silverstripe\FAQ\PageTypes\FAQPage
+    FAQResults_Article: SilverStripe\FAQ\Model\FAQResultsArticle
+    FAQ: SilverStripe\FAQ\Model\FAQ
+    FAQSearch: SilverStripe\FAQ\Model\FAQSearch
+    FAQResults: SilverStripe\FAQ\Model\FAQResults
+    FAQPage: SilverStripe\FAQ\PageTypes\FAQPage
