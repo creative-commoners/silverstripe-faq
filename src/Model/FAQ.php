@@ -264,17 +264,17 @@ class FAQ extends DataObject implements PermissionProvider
      * @param  Member
      * @return Boolean
      */
-    public function canView($member = null, $context = array())
+    public function canView($member = null)
     {
         return true;
     }
 
     public function canEdit($member = null)
     {
-        return Permission::check('FAQ_EDIT', $context = array());
+        return Permission::check('FAQ_EDIT');
     }
 
-    public function canDelete($member = null, $context = array())
+    public function canDelete($member = null)
     {
         return Permission::check('FAQ_DELETE');
     }
