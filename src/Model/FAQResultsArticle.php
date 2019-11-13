@@ -13,7 +13,13 @@ use SilverStripe\ORM\DataObject;
  */
 class FAQResultsArticle extends DataObject
 {
-    private static $table_name = "FAQResultsArticle";
+    /**
+     * `FAQResults_Article` with `_` is used because of BC with previous version (SS3)
+     * this should make upgrades easier (preserving data)
+     *
+     * @var string
+     */
+    private static $table_name = 'FAQResults_Article';
 
     private static $singular_name = 'Article';
 
