@@ -73,7 +73,7 @@ class FAQResults extends DataObject
     {
         $fields = parent::getCMSFields();
 
-        $fields->removeByName(array('ArticleSet', 'SessionID', 'SearchID', 'Useful', Comment::class, 'Archived'));
+        $fields->removeByName(array('ArticleSet', 'SessionID', 'SearchID', 'Useful', 'Comment', 'Archived'));
         $fields->removeFieldFromTab('Root', 'ArticlesViewed');
 
         // Get FAQs listed, the 'FIELD(ID,{IDs})' ensures they appear in the order provided

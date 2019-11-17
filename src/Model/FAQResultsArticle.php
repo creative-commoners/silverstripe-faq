@@ -49,12 +49,12 @@ class FAQResultsArticle extends DataObject
     {
         $fields = parent::getCMSFields();
 
-        $fields->removeByName(array('FAQID', 'ResultSetID', 'SearchID', 'Useful', Comment::class, 'Archived'));
+        $fields->removeByName(array('FAQID', 'ResultSetID', 'SearchID', 'Useful', 'Comment', 'Archived'));
 
         $fields->addFieldsToTab('Root.Main', array(
             ReadonlyField::create('Article', 'Article Question', $this->FAQ()->Question),
             ReadonlyField::create('Useful', 'Useful rating'),
-            ReadonlyField::create(Comment::class, 'Comments')
+            ReadonlyField::create('Comment', 'Comments')
         ));
 
         return $fields;

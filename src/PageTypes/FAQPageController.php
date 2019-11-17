@@ -654,7 +654,7 @@ class FAQPageController extends PageController
                 'Y' => 'Helpful',
                 'N' => 'Unhelpful'
             )),
-            TextareaField::create(Comment::class),
+            TextareaField::create('Comment'),
             LiteralField::create('CharCounter', '<div class="faq__char-counter pull-right"></div>'),
             HiddenField::create('ID', '')
         );
@@ -696,7 +696,7 @@ class FAQPageController extends PageController
 
             if ($articleLog && $articleLog->exists()) {
                 $updated = $articleLog->update(array(
-                    'Comment' => $data[Comment::class],
+                    'Comment' => $data['Comment'],
                     'Useful' => $data['Useful']
                 ))->write();
 
