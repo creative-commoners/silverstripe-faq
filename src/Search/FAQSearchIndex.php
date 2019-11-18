@@ -2,9 +2,10 @@
 
 namespace SilverStripe\FAQ\Search;
 
+use SilverStripe\Control\Director;
+use SilverStripe\Core\Config\Config;
 use SilverStripe\FAQ\Model\FAQ;
 use SilverStripe\FullTextSearch\Search\Queries\SearchQuery;
-use SilverStripe\Core\Config\Config;
 use SilverStripe\FullTextSearch\Solr\Solr;
 use SilverStripe\FullTextSearch\Solr\SolrIndex;
 
@@ -15,7 +16,24 @@ use SilverStripe\FullTextSearch\Solr\SolrIndex;
  */
 class FAQSearchIndex extends SolrIndex
 {
+    /**
+     * Whether or not to include suggestions.
+     *
+     * @config
+     * @var boolean
+     */
     private static $include_suggestions = true;
+
+    /**
+     * Options for {@see Solr::solr_options}
+     * Valid options are relative to project root:
+     * - extraspath: 'vendor/silverstripe/faq/conf/extras'
+     * - templatespath: 'vendor/silverstripe/faq/conf/templates'
+     *
+     * @config
+     * @var string[]
+     */
+    private static $options = [];
 
     /**
      * Adds FAQ fields to the index
@@ -109,11 +127,11 @@ class FAQSearchIndex extends SolrIndex
     public function getExtrasPath()
     {
         // get options from configuration
-        $options = Config::inst()->get(static::class, 'options');
-
+        $options = static::config()->get('options');
+        $fullExtraPath = Director::baseFolder() .  DIRECTORY_SEPARATOR . $options['extraspath'];
         $globalOptions = Solr::solr_options();
-        if (isset($options['extraspath']) && file_exists($options['extraspath'])) {
-            $globalOptions['extraspath'] = $options['extraspath'];
+        if (isset($options['extraspath']) && file_exists($fullExtraPath)) {
+            $globalOptions['extraspath'] = $fullExtraPath;
         }
         return $this->extrasPath ? $this->extrasPath : $globalOptions['extraspath'];
     }
@@ -124,11 +142,11 @@ class FAQSearchIndex extends SolrIndex
      */
     public function getTemplatesPath()
     {
-        $options = Config::inst()->get(static::class, 'options');
-
+        $options = static::config()->get('options');
+        $fullTemplatesPath = Director::baseFolder() .  DIRECTORY_SEPARATOR . $options['templatespath'];
         $globalOptions = Solr::solr_options();
-        if (isset($options['templatespath']) && file_exists($options['templatespath'])) {
-            $globalOptions['templatespath'] = $options['templatespath'];
+        if (isset($options['templatespath']) && file_exists($fullTemplatesPath)) {
+            $globalOptions['templatespath'] = $fullTemplatesPath;
         }
         return $this->templatesPath ? $this->templatesPath : $globalOptions['templatespath'];
     }

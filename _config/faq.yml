@@ -3,16 +3,16 @@ Name: faq
 After:
   - 'framework/*'
 ---
-FAQSearchIndex:
+SilverStripe\FAQ\Search\FAQSearchIndex:
   options:
-    extraspath: '../faq/conf/extras'
-    templatespath: '../faq/conf/templates'
-TaxonomyTerm:
+    extraspath: '/vendor/silverstripe/faq/conf/extras'
+    templatespath: '/vendor/silverstripe/faq/conf/templates'
+SilverStripe\Taxonomy\TaxonomyTerm:
   extensions:
-    - FAQTaxonomyTermExtension
-FAQResults:
+    - SilverStripe\FAQ\Extensions\FAQTaxonomyTermExtension
+SilverStripe\FAQ\Model\FAQResults:
   extensions:
-    - FAQResults_Extension
-FAQResults_Article:
+    - SilverStripe\FAQ\Extensions\FAQResultsExtension
+SilverStripe\FAQ\Model\FAQResultsArticle:
   extensions:
-    - FAQResults_Extension
+    - SilverStripe\FAQ\Extensions\FAQResultsExtension
