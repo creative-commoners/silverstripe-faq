@@ -20,21 +20,35 @@ if (!class_exists(Handler::class)) {
  */
 class GridFieldBulkActionArchiveHandler extends Handler
 {
+
+    private static $url_segment = 'archive';
+
     /**
      * RequestHandler allowed actions
      *
      * @var array
      */
-    private static $allowed_actions = array('archive');
+    private static $allowed_actions = [
+        'archive'
+    ];
 
     /**
      * RequestHandler url => action map
      *
      * @var array
      */
-    private static $url_handlers = array(
-        'archive' => 'archive'
-    );
+    private static $url_handlers = [
+        '' => 'archive'
+    ];
+
+    protected $buttonClasses = 'cross';
+
+    protected $label = 'Archive';
+
+    public function getLabel()
+    {
+        return _t('GRIDFIELD_BULK_MANAGER.ARCHIVE_SELECT_LABEL', $this->label);
+    }
 
     /**
      * Archive the selected records passed from the archive bulk action
