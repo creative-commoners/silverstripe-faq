@@ -89,7 +89,7 @@ class FAQ extends DataObject implements PermissionProvider
     /**
      * Creates a custom FAQSearch search object, can override to prevent the field removals
      *
-     * @return FAQSearch_SearchContext
+     * @return SearchContext
      */
     public function getDefaultSearchContext()
     {

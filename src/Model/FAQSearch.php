@@ -47,7 +47,7 @@ class FAQSearch extends DataObject implements PermissionProvider
     );
 
     private static $searchable_fields = array(
-        'Term' => 'Term'
+        'Term'
     );
 
     private static $has_many = array(
@@ -106,7 +106,7 @@ class FAQSearch extends DataObject implements PermissionProvider
     /**
      * Creates a custom FAQSearch search object, can override to prevent the field removals
      *
-     * @return FAQSearch_SearchContext
+     * @return FAQSearchSearchContext
      */
     public function getDefaultSearchContext()
     {

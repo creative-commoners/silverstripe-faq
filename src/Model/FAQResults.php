@@ -2,22 +2,24 @@
 
 namespace SilverStripe\FAQ\Model;
 
-use SilverStripe\FAQ\Model\FAQResultsArticle;
 use SilverStripe\Comments\Model\Comment;
-use SilverStripe\Forms\ReadonlyField;
-use SilverStripe\Forms\GridField\GridFieldSortableHeader;
-use SilverStripe\Forms\GridField\GridFieldDataColumns;
+use SilverStripe\FAQ\Form\FAQResultsArticleDetailForm;
+use SilverStripe\FAQ\Form\FAQResultsArticleEditButton;
 use SilverStripe\FAQ\Model\FAQ;
-use SilverStripe\Forms\GridField\GridFieldConfig;
+use SilverStripe\FAQ\Model\FAQResultsArticle;
 use SilverStripe\Forms\GridField\GridField;
 use SilverStripe\Forms\GridField\GridFieldButtonRow;
-use SilverStripe\Forms\GridField\GridFieldToolbarHeader;
-use SilverStripe\Forms\GridField\GridFieldEditButton;
+use SilverStripe\Forms\GridField\GridFieldConfig;
+use SilverStripe\Forms\GridField\GridFieldDataColumns;
 use SilverStripe\Forms\GridField\GridFieldDetailForm;
+use SilverStripe\Forms\GridField\GridFieldEditButton;
 use SilverStripe\Forms\GridField\GridFieldFooter;
-use SilverStripe\FAQ\Form\FAQResultsArticleEditButton;
-use SilverStripe\FAQ\Form\FAQResultsArticleDetailForm;
+use SilverStripe\Forms\GridField\GridFieldSortableHeader;
+use SilverStripe\Forms\GridField\GridFieldToolbarHeader;
+use SilverStripe\Forms\ReadonlyField;
 use SilverStripe\ORM\DataObject;
+use SilverStripe\ORM\FieldType\DBField;
+use SilverStripe\ORM\Filters\PartialMatchFilter;
 
 /**
  * Represents a result set resulting from a search.
@@ -41,7 +43,22 @@ class FAQResults extends DataObject
         'getArticlesViewedIDs' => 'Articles viewed',
         'Created.Nice' => 'Date viewed',
         'getArticleIDs' => 'Articles displayed in results',
-        'SetSize' => 'Total displayed'
+        'SetSize' => 'Total displayed',
+    );
+
+    private static $searchable_fields = array(
+        // 'ArticlesViewed.FAQ.Question' => [
+        //     'title' => 'Articles viewed',
+        // ],
+        'Created' => [
+            'title' => 'Date viewed'
+        ],
+        'ArticleSet' => [
+            'title' => 'Articles displayed'
+        ],
+        'SetSize' => [
+            'title' => 'Total displayed'
+        ],
     );
 
     /**
@@ -61,12 +78,7 @@ class FAQResults extends DataObject
      */
     public function getArticlesViewedIDs()
     {
-        $ids = 'None viewed';
-        $views = $this->ArticlesViewed();
-        if ($views && $views->exists()) {
-            $ids = implode(array_keys($views->map('FAQID')->toArray()), ',');
-        }
-        return $ids;
+        return implode(',', $this->ArticlesViewed()->column('FAQID')) ?: 'None viewed';
     }
 
     public function getCMSFields()
