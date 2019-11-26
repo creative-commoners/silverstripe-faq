@@ -114,7 +114,7 @@ class FAQSearch extends DataObject implements PermissionProvider
         $filters = $this->defaultSearchFilters();
 
         return new FAQSearchSearchContext(
-            $this->class,
+            static::class,
             $fields,
             $filters
         );

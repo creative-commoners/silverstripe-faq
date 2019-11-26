@@ -106,7 +106,7 @@ class FAQ extends DataObject implements PermissionProvider
         $filters['Category.Name'] = ExactMatchFilter::create('Category.Name');
 
         return new SearchContext(
-            $this->class,
+            static::class,
             $fields,
             $filters
         );
