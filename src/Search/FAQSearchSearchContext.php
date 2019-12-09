@@ -74,9 +74,10 @@ class FAQSearchSearchContext extends SearchContext
         $this->addField($archived);
     }
 
-    public function getResults($params, $sort = false, $limit = false)
+    public function getQuery($params, $sort = false, $limit = false, $existingQuery = null)
     {
-        $list = parent::getResults($params, $sort = false, $limit = false);
+        $searchParams = array_filter((array)$params, array($this, 'clearEmptySearchFields'));
+        $list = parent::getQuery($searchParams, $sort, $limit, $existingQuery);
 
         if (isset($params['Useful']) && $params['Useful']) {
             $useful = Convert::raw2sql($params['Useful']);

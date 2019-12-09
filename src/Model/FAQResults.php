@@ -91,12 +91,10 @@ class FAQResults extends DataObject
         // Get FAQs listed, the 'FIELD(ID,{IDs})' ensures they appear in the order provided
         $articleIDs = json_decode($this->ArticleSet);
         $articles = FAQ::get()
-            ->where('ID IN (' . implode(',', $articleIDs) . ')')
-            ->sort('FIELD(ID,' . implode(',', $articleIDs) . ')');
+            ->filter('ID', $articleIDs)
+            ->sort('FIELD("ID",' . implode(',', $articleIDs) . ')');
 
         $fields->addFieldToTab('Root.Main', ReadonlyField::create('SetSize', 'Size of this results set'));
-
-        $sort = new GridFieldSortableHeader();
 
         $columns = new GridFieldDataColumns();
         $columns->setDisplayFields(array(
@@ -116,7 +114,7 @@ class FAQResults extends DataObject
             $configSet->addComponents(
                 new GridFieldButtonRow('before'),
                 new GridFieldToolbarHeader(),
-                $sort,
+                new GridFieldSortableHeader(),
                 $columns,
                 new GridFieldEditButton(),
                 new GridFieldDetailForm(),
@@ -135,7 +133,7 @@ class FAQResults extends DataObject
             $configView->addComponents(
                 new GridFieldButtonRow('before'),
                 new GridFieldToolbarHeader(),
-                $sort,
+                new GridFieldSortableHeader(),
                 new GridFieldDataColumns(),
                 new FAQResultsArticleEditButton(),
                 new FAQResultsArticleDetailForm(),
