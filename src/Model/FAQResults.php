@@ -105,7 +105,7 @@ class FAQResults extends DataObject
 
         if (!empty($articleIDs) && $articles->exists()) {
             $fields->addFieldToTab('Root.Main', GridField::create(
-                FAQ::class,
+                'FAQ',
                 'Article Set',
                 $articles,
                 $configSet = GridFieldConfig::create()
