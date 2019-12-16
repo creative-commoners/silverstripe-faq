@@ -97,8 +97,10 @@ class FAQSearchSearchContext extends SearchContext
         }
 
         if (isset($params['RatingComment']) && $params['RatingComment']) {
-            // Need to include the filter to ensure the table is joined
-            $list = $list->filter('Articles.ID:GreaterThan', 0)->where('"FAQResults_Article"."Comment" IS NOT NULL');
+            // Need to include the filter to ensure the FAQResultsArticle exists, and isn't just a null join.
+            $list = $list
+                ->filter('Articles.ID:GreaterThan', 0)
+                ->exclude('Articles.Comment', null);
         }
 
         return $list;
