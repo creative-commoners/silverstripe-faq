@@ -2,7 +2,6 @@
 
 namespace SilverStripe\FAQ\Form;
 
-use DataModel;
 use SilverStripe\FAQ\Model\FAQ;
 use SilverStripe\Forms\GridField\GridFieldDetailForm;
 
@@ -22,7 +21,7 @@ class FAQResultsArticleDetailForm extends GridFieldDetailForm
 
         $class = $this->getItemRequestClass();
 
-        $handler = Object::create($class, $gridField, $this, $record, $requestHandler, $this->name);
+        $handler = $class::create($gridField, $this, $record, $requestHandler, $this->name);
         $handler->setTemplate($this->template);
 
         // if no validator has been set on the GridField and the record has a
@@ -38,6 +37,6 @@ class FAQResultsArticleDetailForm extends GridFieldDetailForm
             $this->setValidator($record->getCMSValidator());
         }
 
-        return $handler->handleRequest($request, DataModel::inst());
+        return $handler->handleRequest($request);
     }
 }
